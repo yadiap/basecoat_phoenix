@@ -1,0 +1,42 @@
+defmodule BasecoatPhoenix.AssetsTest do
+  use ExUnit.Case, async: true
+
+  @hashes %{
+    "all.min.js" => "6dd11f6ea6f2e6321c2ead587bebfeec985ef48a8f108e21722e65be0c94fe73",
+    "basecoat-luma.bundle.css" =>
+      "d80a645d5b0b106bfd866c82e780aa749d2c57ff30dabf92fa74ef2e6f55fba5",
+    "basecoat-lyra.bundle.css" =>
+      "4a0fbd15fd67cb714c041b21325aef45ceae7de743a133566afc57bfdb9416fe",
+    "basecoat-maia.bundle.css" =>
+      "aca88c9cce78f87591acc5ecb97b8029a5e286808c78ba4a5db1428bfc6505c1",
+    "basecoat-mira.bundle.css" =>
+      "8417b612dba5dde923754719d6e2d8fc5a16c3e688443f2c87ae0f71aaa24e7f",
+    "basecoat-nova.bundle.css" =>
+      "1d504788b864cffa88b25e257c052b09d0a92f697b978491716a6e96f38e5789",
+    "basecoat-rhea.bundle.css" =>
+      "a24302291fe3d83433b8b6dbddfb426810121d7d81f53e50d7d5f62f76c1692b",
+    "basecoat-sera.bundle.css" =>
+      "817abad93b33782d976c54a5223a6b980cb87b9129597e05fb7a7c476e23b214",
+    "basecoat-vega.bundle.css" =>
+      "c3ebec72289acda7c3ea1ecad39c203b387b332e964b7ae15c9e5814219ff751",
+    "chart.min.js" => "4e82a2bc45d8ae9f5fc74341d38e71b6bfd4d691075f0cd08fd8ed6b01feff5c",
+    "LICENSE" => "160a6cea26ff1931297957499ab739e94c4bc79ecea18b490c9f533fa76ace78",
+    "typeset.css" => "84aa4d5efea52f00ade2327c041e0d75e94ca5ce61d0708e12134531e4c08ec6"
+  }
+
+  test "vendored files match the pinned hashes" do
+    dir = Path.join([:code.priv_dir(:basecoat_phoenix), "basecoat"])
+
+    for {name, hash} <- @hashes do
+      path = Path.join(dir, name)
+      assert File.exists?(path), "missing #{path}"
+
+      assert :crypto.hash(:sha256, File.read!(path)) |> Base.encode16(case: :lower) == hash
+    end
+  end
+
+  test "version file is 1.2.1" do
+    dir = Path.join([:code.priv_dir(:basecoat_phoenix), "basecoat"])
+    assert File.read!(Path.join(dir, "VERSION")) |> String.trim() == "1.2.1"
+  end
+end
