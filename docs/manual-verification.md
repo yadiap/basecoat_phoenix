@@ -1,0 +1,75 @@
+# Manual verification
+
+Browser checks for behavior that unit tests cannot prove. Run each check in a
+Phoenix 1.8 app that has `mix basecoat.install --replace-ui` applied; the
+installer already wires `priv/basecoat/basecoat_live.js` through
+`BasecoatHooks` in `assets/js/app.js`.
+
+## Setup
+
+1. Add `{:basecoat_phoenix, path: "..."}`.
+2. Run `mix basecoat.install --replace-ui`.
+3. In `html_helpers`, add `use BasecoatPhoenix.Components`.
+4. Start `mix phx.server`.
+
+## Button
+
+- Render `<.bc_button>Save</.bc_button>`; confirm Basecoat's primary styling.
+- `variant="outline"` and `size="sm"` change the look; no `data-variant` or
+  `data-size` appears for the defaults.
+- `href="/x"` renders an `<a>` and still navigates.
+- A button with `phx-click` fires and receives the click.
+
+## Card
+
+- Render a card with header, title, description, action, content, and footer.
+- Confirm spacing and borders match the upstream card example.
+- An unrelated LiveView assign update does not change the card layout.
+
+## Dialog
+
+- Click `bc_dialog_trigger`; the dialog opens modally (page scroll blocked,
+  backdrop visible).
+- Click the backdrop; the dialog closes.
+- Click the close button; the dialog closes.
+- Press Escape; the dialog closes.
+- Open the dialog, then trigger an unrelated LiveView update (`phx-click` that
+  changes another assign). The dialog stays open and the page content is still
+  inert.
+- Render `open` initially; it opens modally on mount, not as a bare attribute.
+- Server-side close with `JS.dispatch("basecoat:close-dialog", to: "#id")`
+  works.
+
+## Select
+
+- Click the trigger; the listbox opens and is positioned under it.
+- Click an option; the trigger label updates, the option is marked
+  `aria-selected`, and the hidden input carries the value.
+- Submit the enclosing form; `phx-change`/`phx-submit` receive the value.
+- With `multiple`, select two options; the hidden input is a JSON array and
+  `BasecoatPhoenix.Forms.decode_multi/1` decodes it.
+- With `format="object"`, the hidden input holds JSON objects with
+  `value` and `label`.
+- Open the listbox, then trigger an unrelated LiveView update. The listbox stays
+  open and the selection is preserved.
+- With dynamic server options, update the options assign; the refreshed listbox
+  shows the new options.
+
+## To be added
+
+These sections are filled in as later tasks land:
+
+- Accordion, collapsible
+- Alert, alert dialog
+- Avatar, badge, bubble, message
+- Carousel
+- Chart, code block
+- Combobox, input OTP, slider
+- Command, command dialog
+- Dropdown menu
+- Item, empty, attachment, trace
+- Popover
+- Sidebar
+- Tabs
+- Toast (Task 13)
+- Theme switcher

@@ -49,7 +49,8 @@ defmodule BasecoatPhoenix.ComponentCase do
     tree
     |> sort_attrs()
     |> Floki.raw_html()
-    |> String.replace(~r/>\s+</, "><")
+    |> String.replace(~r/>\s+/, ">")
+    |> String.replace(~r/\s+</, "<")
     |> String.trim()
   end
 

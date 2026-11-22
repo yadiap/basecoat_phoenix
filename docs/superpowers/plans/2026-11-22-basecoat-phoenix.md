@@ -193,7 +193,8 @@ defmodule BasecoatPhoenix.ComponentCase do
     tree
     |> sort_attrs()
     |> Floki.raw_html()
-    |> String.replace(~r/>\s+</, "><")
+    |> String.replace(~r/>\s+/, ">")
+    |> String.replace(~r/\s+</, "<")
     |> String.trim()
   end
 
@@ -903,6 +904,8 @@ Three constraints drive this shape, verified against the installed LiveView decl
 - `Phoenix.Component.dynamic_tag/1` is a function, not a sigil, so it sidesteps both problems. It needs the component's `__changed__` in its assigns map.
 
 `class` goes into the rest map only when the merged list is non-empty, so no empty `class=""` is invented. Without `attr :rest, :global`, HEEx drops undeclared attributes; the declarations are required, not cosmetic. `defsemantic` must be used in a module that calls `use Phoenix.Component`.
+
+`Semantic.classes/1` flattens a class list and joins it without a stray trailing space, which `class={["card", @class]}` produces when `@class` is nil in LiveView 1.2. Every component that merges a caller class uses it, so markup fidelity tests see `class="card"`, not `class="card "`.
 
 Card then becomes:
 
