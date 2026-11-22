@@ -55,13 +55,64 @@ installer already wires `priv/basecoat/basecoat_live.js` through
 - With dynamic server options, update the options assign; the refreshed listbox
   shows the new options.
 
+## Button group
+
+- Wrap two outline buttons in `<.bc_button_group label="Actions">`.
+- Confirm the buttons share one visual group with joined borders.
+- `aria-label` is present when `label` is set and absent otherwise.
+
+## Badge
+
+- Render each variant: default, secondary, destructive, outline, ghost.
+- Confirm the default omits `data-variant` and each other variant matches its
+  Basecoat style.
+- An inline icon with `data-icon="inline-start"` gets icon-aware spacing.
+
+## Avatar
+
+- Render an avatar with `<.bc_avatar_image>` and `<.bc_avatar_fallback>`.
+- With a valid image URL, the image covers the fallback; with a broken URL, the
+  fallback initials show.
+- `size="sm"` and `size="lg"` resize the avatar.
+- `bc_avatar_badge` sits in the block-end inline-end corner.
+- `bc_avatar_group` overlaps its children.
+
+## Kbd
+
+- `bc_kbd` renders the key style; a class such as `translate-x-0.5` applies.
+
+## Separator
+
+- `bc_separator` renders a horizontal rule.
+- `orientation="vertical"` fills the height of its flex row.
+- `decorative` renders `role="none"`, so assistive tech skips it.
+
+## Skeleton
+
+- `bc_skeleton class="h-4 w-full"` renders a shimmering placeholder.
+- The class carries all sizing; the component adds no size of its own.
+
+## Spinner
+
+- `bc_spinner` spins.
+- `class="size-3"` (or another `size-*`) resizes it.
+- Inside a button, icon-aware spacing applies.
+
+## Progress
+
+- `value={13}` renders a 13% fill.
+- Values above `max` clamp to 100%; negative values clamp to 0%.
+- A third of the way renders `33.3%`.
+- `aria-valuenow`, `aria-valuemin`, `aria-valuemax`, and the label wiring are
+  present for assistive tech.
+
 ## To be added
 
 These sections are filled in as later tasks land:
 
 - Accordion, collapsible
 - Alert, alert dialog
-- Avatar, badge, bubble, message
+- Bubble, message
 - Carousel
 - Chart, code block
 - Combobox, input OTP, slider
