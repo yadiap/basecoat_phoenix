@@ -296,15 +296,55 @@ installer already wires `priv/basecoat/basecoat_live.js` through
   renders.
 - The canvas needs no wrapper; Basecoat adds its own sizing container.
 
+## Breadcrumb
+
+- The current page renders `aria-current="page"` and no link.
+- Separators are decorative (`aria-hidden="true"`) and flip in RTL.
+- `bc_breadcrumb_ellipsis` collapses long trails into a single `…` item.
+
+## Pagination
+
+- Previous and Next show their chevrons on the start and end edges.
+- The current page uses `data-variant="outline"`; the rest use `ghost`.
+- No `.pagination` class is emitted; only the documented utility classes.
+
+## Tabs
+
+- Clicking a tab switches the panel and keeps the active tab after an
+  unrelated assign update.
+- Arrow keys move between tabs; `aria-selected` and `tabindex` follow.
+- `variant="line"` draws the underline style.
+- `disabled` on a tab blocks selection.
+
+## Dropdown Menu
+
+- The trigger opens the popover and closes it on an outside click.
+- An unrelated LiveView update does not close an open menu.
+- Checkbox and radio items show their indicator when checked and toggle.
+- A disabled item is skipped by keyboard navigation.
+- Shortcuts render right-aligned as `<kbd>`.
+
+## Command
+
+- Typing filters items; a group with no match is hidden.
+- `data-empty` text shows when nothing matches.
+- Enter runs the highlighted item; `data-keep-command-open` keeps the dialog up.
+- `data-force` runs even when the item is filtered out.
+- In a dialog, Escape closes it and the backdrop click closes it too.
+- `data-filter="manual"` hands filtering to your own handler.
+
+## Theme Switcher
+
+- Clicking toggles `html.dark` and persists the choice in `localStorage.themeMode`.
+- The sun icon shows in dark mode, the moon in light mode.
+- A theme change survives LiveView patches.
+- The tooltip renders below the button.
+
 ## To be added
 
 These sections are filled in as later tasks land:
 
 - Alert dialog
 - Carousel
-- Command, command dialog
-- Dropdown menu
 - Popover
-- Tabs
 - Toast (Task 13)
-- Theme switcher

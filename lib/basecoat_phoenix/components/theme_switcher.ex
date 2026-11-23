@@ -1,0 +1,62 @@
+defmodule BasecoatPhoenix.Components.ThemeSwitcher do
+  @moduledoc """
+  Basecoat theme switcher. Renders the upstream button; `basecoat_live.js`
+  toggles the theme when `data-basecoat-theme-toggle` is clicked.
+  """
+  use Phoenix.Component
+  import BasecoatPhoenix.Components.Semantic, only: [classes: 1]
+
+  attr(:label, :string, default: "Toggle dark mode")
+  attr(:side, :string, default: "bottom")
+  attr(:class, :string, default: nil)
+  attr(:rest, :global)
+
+  def bc_theme_switcher(assigns) do
+    ~H"""
+    <button
+      type="button"
+      aria-label={@label}
+      data-tooltip={@label}
+      data-side={@side}
+      class={classes(["btn size-8", @class])}
+      data-variant="outline"
+      data-size="icon"
+      data-basecoat-theme-toggle
+      {@rest}
+    >
+      <span class="hidden dark:block">
+        <svg
+          class="lucide lucide-sun"
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="12" cy="12" r="4" /><path d="M12 2v2" /><path d="M12 20v2" /><path d="m4.93 4.93 1.41 1.41" /><path d="m17.66 17.66 1.41 1.41" /><path d="M2 12h2" /><path d="M20 12h2" /><path d="m6.34 17.66-1.41 1.41" /><path d="m19.07 4.93-1.41 1.41" />
+        </svg>
+      </span>
+      <span class="block dark:hidden">
+        <svg
+          class="lucide lucide-moon"
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401" />
+        </svg>
+      </span>
+    </button>
+    """
+  end
+end

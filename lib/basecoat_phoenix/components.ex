@@ -51,6 +51,12 @@ defmodule BasecoatPhoenix.Components do
       import BasecoatPhoenix.Components.Table
       import BasecoatPhoenix.Components.CodeBlock
       import BasecoatPhoenix.Components.Chart
+      import BasecoatPhoenix.Components.Breadcrumb
+      import BasecoatPhoenix.Components.Pagination
+      import BasecoatPhoenix.Components.Tabs
+      import BasecoatPhoenix.Components.DropdownMenu
+      import BasecoatPhoenix.Components.Command
+      import BasecoatPhoenix.Components.ThemeSwitcher
     end
   end
 end
