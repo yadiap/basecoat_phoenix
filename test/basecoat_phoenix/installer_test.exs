@@ -213,6 +213,33 @@ defmodule BasecoatPhoenix.InstallerTest do
     assert Enum.any?(messages, &(&1 =~ "CoreComponents was left untouched"))
   end
 
+  test "chart vendors Chart.js and the chart script, and imports both", ctx do
+    assert {:ok, _} = install(ctx, chart: true)
+
+    vendor = Path.join(ctx.assets, "vendor/basecoat")
+    assert File.exists?(Path.join(vendor, "chartjs.js"))
+    assert File.exists?(Path.join(vendor, "chart.js"))
+
+    js = File.read!(ctx.js_path)
+    assert js =~ ~s|import "../vendor/basecoat/chartjs.js";|
+    assert js =~ ~s|import "../vendor/basecoat/chart.js";|
+
+    assert js =~
+             ~s|import "../vendor/basecoat/chartjs.js";\nimport "../vendor/basecoat/chart.js";|
+  end
+
+  test "a later chart run adds the imports a first run left out", ctx do
+    assert {:ok, _} = install(ctx)
+    refute File.read!(ctx.js_path) =~ ~s|import "../vendor/basecoat/chart.js";|
+
+    assert {:ok, _} = install(ctx, chart: true)
+
+    js = File.read!(ctx.js_path)
+    assert js =~ ~s|import "../vendor/basecoat/chartjs.js";|
+    assert js =~ ~s|import "../vendor/basecoat/chart.js";|
+    assert length(String.split(js, "BasecoatHooks} from")) == 2
+  end
+
   test "dry_run writes nothing", ctx do
     before_css = File.read!(ctx.css_path)
     before_js = File.read!(ctx.js_path)

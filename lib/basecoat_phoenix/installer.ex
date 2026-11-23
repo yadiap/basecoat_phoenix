@@ -108,7 +108,10 @@ defmodule BasecoatPhoenix.Installer do
         else: []
       ) ++
       if(opts[:chart],
-        do: [{Path.join(priv, "chart.min.js"), Path.join(vendor, "chart.js")}],
+        do: [
+          {Path.join(priv, "chart.umd.min.js"), Path.join(vendor, "chartjs.js")},
+          {Path.join(priv, "chart.min.js"), Path.join(vendor, "chart.js")}
+        ],
         else: []
       )
   end
@@ -239,24 +242,22 @@ defmodule BasecoatPhoenix.Installer do
          ]}
 
       true ->
-        chart_import =
+        chart_imports =
           if opts[:chart] do
+            chartjs = relative(Path.join(vendor, "chartjs.js"), js_dir)
             chart = relative(Path.join(vendor, "chart.js"), js_dir)
-            [~s|import "#{chart}";|]
+            [~s|import "#{chartjs}";|, ~s|import "#{chart}";|]
           else
             []
           end
 
         imports =
           [~s|import "#{basecoat_js}";|] ++
-            chart_import ++ [~s|import {BasecoatHooks} from "#{live_js}";|]
+            chart_imports ++ [~s|import {BasecoatHooks} from "#{live_js}";|]
 
-        js =
-          if String.contains?(js, "BasecoatHooks") do
-            js
-          else
-            insert_before(js, @csrf_anchor, imports)
-          end
+        # Insert only what is missing, so a later `--chart` run adds its imports.
+        missing = Enum.reject(imports, &String.contains?(js, &1))
+        js = if missing == [], do: js, else: insert_before(js, @csrf_anchor, missing)
 
         {String.replace(js, @hooks_needle, @hooks_merged), []}
     end

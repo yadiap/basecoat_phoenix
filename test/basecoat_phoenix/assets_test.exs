@@ -20,6 +20,7 @@ defmodule BasecoatPhoenix.AssetsTest do
     "basecoat-vega.bundle.css" =>
       "c3ebec72289acda7c3ea1ecad39c203b387b332e964b7ae15c9e5814219ff751",
     "chart.min.js" => "4e82a2bc45d8ae9f5fc74341d38e71b6bfd4d691075f0cd08fd8ed6b01feff5c",
+    "chart.umd.min.js" => "87364cc2b2a76a6684929e7d6b80b18a897794db38400caff1fcf1791c6925d2",
     "LICENSE" => "160a6cea26ff1931297957499ab739e94c4bc79ecea18b490c9f533fa76ace78",
     "typeset.css" => "84aa4d5efea52f00ade2327c041e0d75e94ca5ce61d0708e12134531e4c08ec6"
   }

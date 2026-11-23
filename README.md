@@ -204,16 +204,17 @@ attribute on the component root or re-render the subtree.
 ## Charts
 
 `bc_chart` renders a bare `<canvas>` plus the `data-chart-*` configuration. The
-app must load Chart.js before the chart hook runs. Without it, the console logs
-one clear error and the page still renders.
+app must load Chart.js and Basecoat's chart script before the chart hook runs.
+Without them, the console logs one clear error and the page still renders.
 
-Let the installer vendor it:
+Let the installer vendor both:
 
 ```bash
 mix basecoat.install --chart
 ```
 
-That copies Chart.js into `assets/vendor/basecoat/chart.js` and imports it in
+That copies Chart.js 4.6.1 and Basecoat's chart script into
+`assets/vendor/basecoat/` (`chartjs.js` and `chart.js`) and imports both in
 `assets/js/app.js`. Loading Chart.js another way works too; the hook only needs
 `window.Chart`.
 

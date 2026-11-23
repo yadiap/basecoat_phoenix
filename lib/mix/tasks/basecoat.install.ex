@@ -17,7 +17,8 @@ defmodule Mix.Tasks.Basecoat.Install do
     * `--style` - style pack: vega (default), nova, maia, lyra, mira, luma,
       sera, rhea
     * `--typeset` - also copy `typeset.css` and import it
-    * `--chart` - also copy Chart.js and import it
+    * `--chart` - also copy Chart.js and Basecoat's chart script, and import
+      both
     * `--dry-run` - report the changes without writing anything
     * `--core-components` - path to `core_components.ex` (defaults to
       `lib/*_web/components/core_components.ex`)
