@@ -1,7 +1,8 @@
 defmodule BasecoatPhoenix.Installer do
   @moduledoc """
-  Copies the pinned Basecoat assets into a Phoenix project and patches
-  `assets/css/app.css` and `assets/js/app.js`.
+  Copies the pinned Basecoat assets into a Phoenix project, patches
+  `assets/css/app.css` and `assets/js/app.js`, and replaces the generated
+  `core_components.ex` with the `BasecoatPhoenix.CoreComponents` drop-in.
 
   Returns `{:ok, messages}` with written paths and warnings, or `{:error, msg}`
   when the project does not look like a Phoenix 1.8 app or still needs the
@@ -17,6 +18,13 @@ defmodule BasecoatPhoenix.Installer do
   @hooks_needle "hooks: {...colocatedHooks}"
   @hooks_merged "hooks: {...colocatedHooks, ...BasecoatHooks}"
   @csrf_anchor "const csrfToken"
+  @core_components_glob "lib/*_web/components/core_components.ex"
+  @core_components_marker "use BasecoatPhoenix.CoreComponents"
+  @module_pattern ~r/^defmodule\s+([A-Z][\w.]*)\s+do/m
+  @gettext_patterns [
+    ~r/use\s+Gettext,\s*backend:\s*([A-Z][\w.]*)/,
+    ~r/Gettext\.dgettext\(\s*([A-Z][\w.]*),/
+  ]
 
   @spec install(keyword()) :: {:ok, [String.t()]} | {:error, String.t()}
   def install(opts \\ []) do
@@ -31,8 +39,21 @@ defmodule BasecoatPhoenix.Installer do
     with {:ok, css} <- read(css_path),
          :ok <- check_tailwind(css, css_path),
          {:ok, css, destructive?} <- replace_ui(css, opts[:replace_ui]),
-         {:ok, js} <- read(js_path) do
-      build(assets, css_path, js_path, style, source_path, opts, css, js, dry_run, destructive?)
+         {:ok, js} <- read(js_path),
+         {:ok, messages} <-
+           build(
+             assets,
+             css_path,
+             js_path,
+             style,
+             source_path,
+             opts,
+             css,
+             js,
+             dry_run,
+             destructive?
+           ) do
+      {:ok, messages ++ replace_core_components(root, opts, dry_run, !!opts[:replace_ui])}
     end
   end
 
@@ -113,6 +134,92 @@ defmodule BasecoatPhoenix.Installer do
     else
       css
     end
+  end
+
+  defp replace_core_components(_root, _opts, _dry_run, false), do: []
+
+  defp replace_core_components(root, opts, dry_run, true) do
+    case core_components_path(root, opts) do
+      nil ->
+        [
+          "warning: no #{@core_components_glob} found, so CoreComponents was left untouched."
+        ]
+
+      path ->
+        replace_core_components_file(path, dry_run)
+    end
+  end
+
+  defp core_components_path(root, opts) do
+    case opts[:core_components] do
+      nil ->
+        root |> Path.join(@core_components_glob) |> Path.wildcard() |> List.first()
+
+      path ->
+        Path.expand(path, root)
+    end
+  end
+
+  defp replace_core_components_file(path, dry_run) do
+    with {:ok, source} <- read(path) do
+      cond do
+        String.contains?(source, @core_components_marker) ->
+          ["kept: #{path} (already uses BasecoatPhoenix.CoreComponents)"]
+
+        module = module_name(source) ->
+          write_core_components(path, module, gettext_backend(source), dry_run)
+
+        true ->
+          [
+            "warning: could not find a `defmodule ... do` in #{path}, " <>
+              "so CoreComponents was left untouched."
+          ]
+      end
+    else
+      {:error, message} -> ["warning: #{message}, so CoreComponents was left untouched."]
+    end
+  end
+
+  defp write_core_components(path, module, gettext_backend, dry_run) do
+    use_line =
+      if gettext_backend,
+        do: "#{@core_components_marker}, gettext_backend: #{gettext_backend}",
+        else: @core_components_marker
+
+    content = """
+    defmodule #{module} do
+      @moduledoc \"\"\"
+      Basecoat-backed core components. See `BasecoatPhoenix.CoreComponents`.
+      \"\"\"
+
+      #{use_line}
+    end
+    """
+
+    backup = path <> ".bak"
+
+    unless dry_run do
+      File.cp!(path, backup)
+      File.write!(path, content)
+    end
+
+    ["backup: #{backup}", "wrote: #{path}"]
+  end
+
+  defp module_name(source) do
+    case Regex.run(@module_pattern, source) do
+      [_, module] -> module
+      _ -> nil
+    end
+  end
+
+  defp gettext_backend(source) do
+    Enum.find_value(@gettext_patterns, fn pattern ->
+      case Regex.run(pattern, source) do
+        [_, backend] -> backend
+        _ -> nil
+      end
+    end)
   end
 
   defp patch_js(js, opts, vendor, js_dir, basecoat_js, live_js) do

@@ -11,12 +11,16 @@ defmodule Mix.Tasks.Basecoat.Install do
   Options:
 
     * `--replace-ui` - remove the daisyUI plugin blocks and the
-      `[data-theme=dark]` variant from `app.css` (required when they exist)
+      `[data-theme=dark]` variant from `app.css` (required when they exist),
+      and replace the generated `core_components.ex` with the
+      `BasecoatPhoenix.CoreComponents` drop-in
     * `--style` - style pack: vega (default), nova, maia, lyra, mira, luma,
       sera, rhea
     * `--typeset` - also copy `typeset.css` and import it
     * `--chart` - also copy Chart.js and import it
     * `--dry-run` - report the changes without writing anything
+    * `--core-components` - path to `core_components.ex` (defaults to
+      `lib/*_web/components/core_components.ex`)
     * `--assets-path`, `--css`, `--js`, `--source-path` - override the default
       paths
   """
@@ -30,7 +34,8 @@ defmodule Mix.Tasks.Basecoat.Install do
     assets_path: :string,
     css: :string,
     js: :string,
-    source_path: :string
+    source_path: :string,
+    core_components: :string
   ]
 
   @impl Mix.Task

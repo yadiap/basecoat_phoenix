@@ -26,26 +26,41 @@ defmodule BasecoatPhoenix.InstallerTest do
   const liveSocket = new LiveSocket("/live", Socket, {hooks: {...colocatedHooks}})
   """
 
+  @core_components """
+  defmodule MyAppWeb.CoreComponents do
+    @moduledoc "Provides core UI components."
+
+    use Gettext, backend: MyAppWeb.Gettext
+
+    attr :type, :string, default: nil
+    def button(assigns), do: ~H"<button>{@type}</button>"
+  end
+  """
+
   setup do
     root = Path.join(System.tmp_dir!(), "bc_installer_#{System.unique_integer([:positive])}")
     css_path = Path.join(root, "assets/css/app.css")
     js_path = Path.join(root, "assets/js/app.js")
+    core_path = Path.join(root, "lib/my_app_web/components/core_components.ex")
     assets = Path.join(root, "assets")
 
     File.mkdir_p!(Path.dirname(css_path))
     File.mkdir_p!(Path.dirname(js_path))
+    File.mkdir_p!(Path.dirname(core_path))
     File.write!(css_path, @css)
     File.write!(js_path, @js)
+    File.write!(core_path, @core_components)
 
     on_exit(fn -> File.rm_rf!(root) end)
 
-    %{root: root, assets: assets, css_path: css_path, js_path: js_path}
+    %{root: root, assets: assets, css_path: css_path, js_path: js_path, core_path: core_path}
   end
 
   defp install(ctx, opts \\ []) do
     Installer.install(
       Keyword.merge(
         [
+          root: ctx.root,
           assets_path: ctx.assets,
           css: ctx.css_path,
           js: ctx.js_path,
@@ -97,6 +112,7 @@ defmodule BasecoatPhoenix.InstallerTest do
     assert {:error, message} = install(ctx, replace_ui: false)
     assert message =~ "daisyui"
     refute File.exists?(Path.join(ctx.assets, "vendor"))
+    refute File.exists?(ctx.core_path <> ".bak")
   end
 
   test "requires the Tailwind import", ctx do
@@ -125,16 +141,91 @@ defmodule BasecoatPhoenix.InstallerTest do
     assert File.read!(ctx.js_path) =~ ~s(import "phoenix_html")
   end
 
+  test "replaces core_components with the BasecoatPhoenix drop-in", ctx do
+    assert {:ok, _messages} = install(ctx)
+
+    content = File.read!(ctx.core_path)
+
+    assert content == """
+           defmodule MyAppWeb.CoreComponents do
+             @moduledoc \"\"\"
+             Basecoat-backed core components. See `BasecoatPhoenix.CoreComponents`.
+             \"\"\"
+
+             use BasecoatPhoenix.CoreComponents, gettext_backend: MyAppWeb.Gettext
+           end
+           """
+
+    assert File.read!(ctx.core_path <> ".bak") == @core_components
+  end
+
+  test "omits the gettext backend when the generated module has none", ctx do
+    File.write!(ctx.core_path, """
+    defmodule MyAppWeb.CoreComponents do
+      def button(assigns), do: ~H"<button></button>"
+    end
+    """)
+
+    assert {:ok, _} = install(ctx)
+    content = File.read!(ctx.core_path)
+
+    assert content =~ "use BasecoatPhoenix.CoreComponents\n"
+    refute content =~ "gettext_backend"
+  end
+
+  test "keeps an already migrated core_components", ctx do
+    migrated = """
+    defmodule MyAppWeb.CoreComponents do
+      use BasecoatPhoenix.CoreComponents, gettext_backend: MyAppWeb.Gettext
+    end
+    """
+
+    File.write!(ctx.core_path, migrated)
+
+    assert {:ok, messages} = install(ctx)
+    assert Enum.any?(messages, &(&1 =~ "kept: #{ctx.core_path}"))
+    assert File.read!(ctx.core_path) == migrated
+    refute File.exists?(ctx.core_path <> ".bak")
+  end
+
+  test "replaces core_components even when the CSS is already clean", ctx do
+    File.write!(ctx.css_path, ~s|@import "tailwindcss" source(none);\n|)
+
+    assert {:ok, _} = install(ctx)
+    assert File.read!(ctx.core_path) =~ "use BasecoatPhoenix.CoreComponents"
+  end
+
+  test "honours the core_components path override", ctx do
+    custom = Path.join(ctx.root, "lib/custom/core_components.ex")
+    File.mkdir_p!(Path.dirname(custom))
+    File.write!(custom, @core_components)
+
+    assert {:ok, _} = install(ctx, core_components: "lib/custom/core_components.ex")
+
+    assert File.read!(custom) =~ "use BasecoatPhoenix.CoreComponents"
+    assert File.read!(ctx.core_path) == @core_components
+  end
+
+  test "warns when core_components is missing", ctx do
+    File.rm!(ctx.core_path)
+
+    assert {:ok, messages} = install(ctx)
+    assert Enum.any?(messages, &(&1 =~ "CoreComponents was left untouched"))
+  end
+
   test "dry_run writes nothing", ctx do
     before_css = File.read!(ctx.css_path)
     before_js = File.read!(ctx.js_path)
+    before_core = File.read!(ctx.core_path)
 
     assert {:ok, messages} = install(ctx, dry_run: true)
     assert messages != []
 
     refute File.exists?(Path.join(ctx.assets, "vendor"))
     refute File.exists?(ctx.css_path <> ".bak")
+    refute File.exists?(ctx.core_path <> ".bak")
     assert File.read!(ctx.css_path) == before_css
     assert File.read!(ctx.js_path) == before_js
+    assert File.read!(ctx.core_path) == before_core
   end
 end

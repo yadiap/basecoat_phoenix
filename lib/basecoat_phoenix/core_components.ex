@@ -19,6 +19,10 @@ defmodule BasecoatPhoenix.CoreComponents do
   `<.table>`, `<.list>`, `<.header>`, `<.flash>`, and `<.icon>` call site is
   untouched.
 
+  `mix basecoat.install --replace-ui` writes this file for you: it keeps your
+  module name and Gettext backend and saves the generated module as
+  `core_components.ex.bak`.
+
   Delete the rest of the generated module. Keep your own additions by putting
   them after the `use`.
 

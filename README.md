@@ -75,10 +75,17 @@ That removes every daisyUI plugin block and the `[data-theme=dark]` variant,
 then backs up the original `app.css` to `app.css.bak` once. Basecoat dark mode
 uses the `html.dark` class instead.
 
+The same flag also replaces the generated
+`lib/my_app_web/components/core_components.ex` with the
+`BasecoatPhoenix.CoreComponents` drop-in. The installer keeps the module name,
+carries over the Gettext backend, and saves the original as
+`core_components.ex.bak`. Existing `<.button>`, `<.input>`, `<.table>`,
+`<.list>`, `<.header>`, `<.flash>`, and `<.icon>` call sites keep working.
+
 Options: `--style luma|lyra|maia|mira|nova|rhea|sera|vega` (default `vega`),
 `--typeset` (also copy `typeset.css`), `--chart` (also copy and load Chart.js),
-`--dry-run`, and the path overrides `--assets-path`, `--css`, `--js`,
-`--source-path`.
+`--dry-run`, `--core-components` (path override for the drop-in target), and
+the path overrides `--assets-path`, `--css`, `--js`, `--source-path`.
 
 ## Use
 
@@ -135,8 +142,14 @@ without an example, so the file stays complete.
 
 Phoenix 1.8 generates `lib/my_app_web/components/core_components.ex` with
 daisyUI markup, and every generated template calls `<.button>`, `<.input>`,
-`<.table>`, `<.list>`, `<.header>`, `<.flash>`, and `<.icon>`. Replace the whole
-file with three lines:
+`<.table>`, `<.list>`, `<.header>`, `<.flash>`, and `<.icon>`. Run:
+
+```bash
+mix basecoat.install --replace-ui
+```
+
+It rewrites that file to the three lines below (original saved as
+`core_components.ex.bak`) and drops daisyUI from the stylesheet:
 
 ```elixir
 defmodule MyAppWeb.CoreComponents do
@@ -148,11 +161,9 @@ end
 Nothing else changes: `MyAppWeb` keeps `import MyAppWeb.CoreComponents`, and no
 template is edited. Same function names, same attributes, same slots, same
 `translate_error/1` and `translate_errors/2`, same `show/2` and `hide/2` JS
-commands.
-
-Then drop daisyUI from the stylesheet, which is what `mix basecoat.install
---replace-ui` does. Basecoat's dark mode uses `html.dark`, not
-`[data-theme=dark]`.
+commands. The installer carries over your module name and Gettext backend; if
+the file is already migrated, it leaves it alone. Basecoat's dark mode uses
+`html.dark`, not `[data-theme=dark]`.
 
 Kept as-is, on purpose:
 
