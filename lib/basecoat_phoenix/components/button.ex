@@ -9,6 +9,7 @@ defmodule BasecoatPhoenix.Components.Button do
   attr(:size, :string, default: nil)
   attr(:type, :string, default: "button")
   attr(:href, :string, default: nil)
+  attr(:disabled, :boolean, default: false)
   attr(:class, :string, default: nil)
   attr(:rest, :global)
   slot(:inner_block, required: true)
@@ -29,6 +30,7 @@ defmodule BasecoatPhoenix.Components.Button do
       class={classes(["btn", @class])}
       data-variant={default(@variant, "primary")}
       data-size={default(@size, "default")}
+      disabled={@disabled}
       {@rest}
     >{render_slot(@inner_block)}</button>
     """

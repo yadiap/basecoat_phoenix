@@ -121,6 +121,10 @@ Five upstream pages are patterns, not components, and ship as documented
 attributes and utility classes only: Direction, Aspect Ratio, Scroll Area, Data
 Table, and Tooltip.
 
+Copy-paste examples for every component are in
+[`docs/examples.md`](docs/examples.md). A test fails if a component ships
+without an example, so the file stays complete.
+
 ## CSP
 
 No library markup contains an inline `onclick`, `onsubmit`, or other handler
