@@ -6,6 +6,8 @@ function components with upstream markup, ARIA, and `data-*` attributes intact.
 Basecoat 1.2.1 is vendored under `priv/basecoat/`. Installation needs no npm and
 no network.
 
+Source: <https://github.com/yadiap/basecoat_phoenix>. Not published on Hex.
+
 ## Supported versions
 
 - Elixir `~> 1.15`
@@ -17,7 +19,27 @@ no network.
 
 ## Install
 
-Add the dependency:
+Add the dependency to `mix.exs`:
+
+```elixir
+defp deps do
+  [
+    # ...
+    {:basecoat_phoenix, git: "https://github.com/yadiap/basecoat_phoenix.git", tag: "v0.1.0"}
+  ]
+end
+```
+
+Then:
+
+```bash
+mix deps.get
+```
+
+Pin a tag or a commit; the library is pre-1.0 and the API can change between
+revisions. To track the default branch instead, drop `tag:`.
+
+Working on the library itself? Point at a local checkout:
 
 ```elixir
 {:basecoat_phoenix, path: "../basecoat_phoenix"}
@@ -33,6 +55,14 @@ It copies the vendored assets into `assets/vendor/basecoat/`, imports the
 Basecoat CSS in `assets/css/app.css`, adds the `@source` line that makes Tailwind
 scan the components, and merges `BasecoatHooks` into `assets/js/app.js`.
 
+The `@source` line points at the library source inside `deps/`. Re-run
+`mix basecoat.install` after upgrading the dependency so the path stays correct.
+For a local `path:` dependency, pass the real location:
+
+```bash
+mix basecoat.install --source-path ../../basecoat_phoenix/lib
+```
+
 A stock Phoenix 1.8 app also has daisyUI and a `[data-theme=dark]` variant in
 `app.css`. Both collide with Basecoat (`.btn`, `.card`, `.input`, `.badge`, and
 dark-mode selectors), so the installer refuses to run until you pass:
@@ -46,7 +76,9 @@ then backs up the original `app.css` to `app.css.bak` once. Basecoat dark mode
 uses the `html.dark` class instead.
 
 Options: `--style luma|lyra|maia|mira|nova|rhea|sera|vega` (default `vega`),
-`--typeset` (also copy `typeset.css`), `--dry-run`.
+`--typeset` (also copy `typeset.css`), `--chart` (also copy and load Chart.js),
+`--dry-run`, and the path overrides `--assets-path`, `--css`, `--js`,
+`--source-path`.
 
 ## Use
 
@@ -113,6 +145,16 @@ attribute on the component root or re-render the subtree.
 `bc_chart` renders a bare `<canvas>` plus the `data-chart-*` configuration. The
 app must load Chart.js before the chart hook runs. Without it, the console logs
 one clear error and the page still renders.
+
+Let the installer vendor it:
+
+```bash
+mix basecoat.install --chart
+```
+
+That copies Chart.js into `assets/vendor/basecoat/chart.js` and imports it in
+`assets/js/app.js`. Loading Chart.js another way works too; the hook only needs
+`window.Chart`.
 
 ## Toasts
 
