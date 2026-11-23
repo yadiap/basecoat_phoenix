@@ -106,6 +106,73 @@ installer already wires `priv/basecoat/basecoat_live.js` through
 - `aria-valuenow`, `aria-valuemin`, `aria-valuemax`, and the label wiring are
   present for assistive tech.
 
+## Input, textarea, native select, label
+
+- `bc_input` and `bc_textarea` take Basecoat's input styling; `class` merges
+  with the base class.
+- Submitting the enclosing form sends the `name`/`value` pair.
+- With `field={@form[:name]}`, the id, name, and value come from the field, and
+  a field error adds `aria-invalid="true"` plus `aria-describedby="<id>-error"`.
+- `bc_native_select` renders native `<option>` children; the current value is
+  preselected and a disabled option cannot be chosen.
+- `bc_label` matches upstream and `for=` focuses its control.
+
+## Field, fieldset
+
+- `bc_fieldset` renders a real `<fieldset>` with a `<legend>`;
+  `as="div"` renders `<div role="group">` instead.
+- `bc_field` lays out a label, control, description, and error with the
+  upstream spacing.
+- `bc_field_description` and `bc_field_error` produce `id="<id>-description"`
+  and `id="<id>-error"`; the error is announced as `role="alert"`.
+
+## Checkbox, radio group, switch, toggle, toggle group
+
+- `bc_checkbox` toggles on label click; `description` moves the label into a
+  `<section>` with helper text and wires `aria-describedby`.
+- `bc_radio_group_item` shows only one selected radio per `name`.
+- `bc_switch` renders a native checkbox with `role="switch"`; the knob animates.
+- `bc_toggle` renders a button-styled label whose native input still submits.
+- `bc_toggle_group` submits every checked value; `single: true` renders radios
+  so only one value is submitted.
+- Keyboard: Tab reaches each control, Space toggles it, arrow keys move within
+  a radio group.
+
+## Input group
+
+- `bc_input_group` renders a borderless input inside the group shell.
+- `data-align="start|end"` addons sit on the correct side and flip under RTL.
+- `bc_input_group_button as="group"` renders `<div role="group">` for several
+  related actions.
+
+## Input OTP
+
+- Typing fills the slot spans one character at a time and the caret follows.
+- Backspace and paste behave; a paste longer than `length` truncates.
+- With `filter`, a paste containing a disallowed character is rejected
+  (requires `pattern`).
+- The real input still submits its `value` with the form.
+- An unrelated LiveView patch leaves the typed code and slots intact
+  (`phx-update="ignore"`).
+
+## Slider
+
+- Dragging the thumb updates the filled track.
+- A server-side value change (for example a `phx-click` that raises the value)
+  repaints the fill without a page reload.
+- `min`/`max`/`step` behave natively; a zero-width range renders an empty fill.
+
+## Combobox
+
+- Typing filters the listbox; the empty state uses `data-empty`.
+- Clicking an option sets the hidden input and the visible label.
+- With `multiple`, the hidden input is a JSON array; with
+  `format="object"`, JSON objects with `value` and `label`.
+- With `clear`, the clear button empties the selection and the chevron button
+  opens the listbox.
+- Grouped options show a heading per group.
+- An unrelated LiveView patch keeps the open listbox and the filter text.
+
 ## To be added
 
 These sections are filled in as later tasks land:
@@ -115,7 +182,6 @@ These sections are filled in as later tasks land:
 - Bubble, message
 - Carousel
 - Chart, code block
-- Combobox, input OTP, slider
 - Command, command dialog
 - Dropdown menu
 - Item, empty, attachment, trace

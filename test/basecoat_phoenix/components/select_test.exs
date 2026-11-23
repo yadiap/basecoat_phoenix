@@ -71,7 +71,7 @@ defmodule BasecoatPhoenix.Components.SelectTest do
 
     heading = one(group, "span[role=heading]")
     assert attr(heading, "id") == "fruit-fruits"
-    assert text(heading) == "Fruits"
+    assert text(heading) |> String.trim() == "Fruits"
     assert length(Floki.find(html, "div[role=group]")) == 2
   end
 

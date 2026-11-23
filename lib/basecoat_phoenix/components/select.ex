@@ -13,7 +13,7 @@ defmodule BasecoatPhoenix.Components.Select do
   use Phoenix.Component
   import BasecoatPhoenix.Components.Semantic, only: [classes: 1]
 
-  import BasecoatPhoenix.Forms
+  alias BasecoatPhoenix.Components.Options
   alias BasecoatPhoenix.Field
 
   attr(:id, :string, required: true)
@@ -29,7 +29,7 @@ defmodule BasecoatPhoenix.Components.Select do
 
   def bc_select(assigns) do
     resolved = Field.resolve(assigns.field, name: assigns.name, value: assigns.value)
-    options = normalize_options(assigns.options)
+    options = Options.normalize(assigns.options)
 
     assigns =
       assigns
@@ -37,11 +37,11 @@ defmodule BasecoatPhoenix.Components.Select do
       |> assign(:input_name, resolved.name)
       |> assign(
         :selected_label,
-        trigger_label(options, resolved.value, assigns.multiple, assigns.placeholder)
+        Options.selection_label(options, resolved.value, assigns.multiple, assigns.placeholder)
       )
       |> assign(
         :hidden_value,
-        hidden_value(options, resolved.value, assigns.multiple, assigns.format)
+        Options.hidden_value(options, resolved.value, assigns.multiple, assigns.format)
       )
 
     ~H"""
@@ -86,8 +86,10 @@ defmodule BasecoatPhoenix.Components.Select do
         >
           <%= for option <- @options do %>
             <%= if option.options do %>
-              <div role="group" aria-labelledby={"#{@id}-#{slug(option.label)}"}>
-                <span role="heading" id={"#{@id}-#{slug(option.label)}"}>{option.label}</span>
+              <div role="group" aria-labelledby={"#{@id}-#{Options.slug(option.label)}"}>
+                <span role="heading" id={"#{@id}-#{Options.slug(option.label)}"}>
+                  {option.label}
+                </span>
                 <%= for child <- option.options do %>
                   <div
                     role="option"
@@ -113,93 +115,5 @@ defmodule BasecoatPhoenix.Components.Select do
       <input type="hidden" name={@input_name} value={@hidden_value} />
     </div>
     """
-  end
-
-  defp normalize_options(nil), do: []
-
-  defp normalize_options(options) when is_list(options),
-    do: Enum.map(options, &normalize_option/1)
-
-  defp normalize_option(option) when is_map(option) do
-    children = Map.get(option, :options) || Map.get(option, "options")
-
-    %{
-      value: Map.get(option, :value) || Map.get(option, "value"),
-      label: Map.get(option, :label) || Map.get(option, "label"),
-      disabled: Map.get(option, :disabled) || Map.get(option, "disabled") || false,
-      options: if(is_list(children), do: normalize_options(children))
-    }
-  end
-
-  defp trigger_label(options, value, true, placeholder) do
-    case List.wrap(value) do
-      [] -> placeholder || ""
-      values -> Enum.map_join(values, ", ", &detail_label(&1, options))
-    end
-  end
-
-  defp trigger_label(_options, value, false, placeholder) when value in [nil, ""],
-    do: placeholder || ""
-
-  defp trigger_label(options, value, false, _placeholder), do: detail_label(value, options)
-
-  defp detail_label(value, _options) when is_map(value) do
-    Map.get(value, :label) || Map.get(value, "label") || scalar(value)
-  end
-
-  defp detail_label(value, options), do: option_label(options, value) || scalar(value)
-
-  defp option_label([], _value), do: nil
-
-  defp option_label([option | rest], value) do
-    cond do
-      option.options -> option_label(option.options, value) || option_label(rest, value)
-      to_string(option.value) == to_string(value) -> option.label
-      true -> option_label(rest, value)
-    end
-  end
-
-  defp hidden_value(_options, nil, false, _format), do: ""
-
-  defp hidden_value(options, value, true, format) do
-    items =
-      value
-      |> List.wrap()
-      |> Enum.map(fn item ->
-        if format == "object", do: detail(item, options), else: scalar(item)
-      end)
-
-    encode_selection(items, format)
-  end
-
-  defp hidden_value(options, value, false, "object") do
-    encode_selection(detail(value, options), "object")
-  end
-
-  defp hidden_value(_options, value, false, _format), do: scalar(value)
-
-  defp detail(value, _options) when is_map(value) do
-    %{
-      "value" => scalar(value),
-      "label" => Map.get(value, :label) || Map.get(value, "label") || scalar(value)
-    }
-  end
-
-  defp detail(value, options) do
-    %{"value" => scalar(value), "label" => option_label(options, value) || scalar(value)}
-  end
-
-  defp scalar(value) when is_map(value) do
-    Map.get(value, :value) || Map.get(value, "value") || value
-  end
-
-  defp scalar(value), do: to_string(value)
-
-  defp slug(label) do
-    label
-    |> to_string()
-    |> String.downcase()
-    |> String.replace(~r/[^a-z0-9]+/, "-")
-    |> String.trim("-")
   end
 end
