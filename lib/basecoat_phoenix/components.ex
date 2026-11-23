@@ -37,6 +37,11 @@ defmodule BasecoatPhoenix.Components do
       import BasecoatPhoenix.Components.InputOtp
       import BasecoatPhoenix.Components.Slider
       import BasecoatPhoenix.Components.Combobox
+      import BasecoatPhoenix.Components.Item
+      import BasecoatPhoenix.Components.Empty
+      import BasecoatPhoenix.Components.Collapsible
+      import BasecoatPhoenix.Components.Accordion
+      import BasecoatPhoenix.Components.Sidebar
     end
   end
 end

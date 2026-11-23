@@ -173,20 +173,60 @@ installer already wires `priv/basecoat/basecoat_live.js` through
 - Grouped options show a heading per group.
 - An unrelated LiveView patch keeps the open listbox and the filter text.
 
+## Item
+
+- `bc_item` renders a display row; `href` makes the whole row a link.
+- Media, content, actions, header, and footer land in the upstream slots.
+- `variant` (`outline`, `muted`) and `size` (`sm`, `xs`) change the look.
+- `bc_item_group` stacks related items.
+
+## Empty
+
+- `bc_empty` renders the centered empty state with media, title, and
+  description.
+- An icon-only figure is styled automatically.
+- `bc_empty_content` or `bc_empty_footer` holds the actions.
+
+## Collapsible
+
+- Clicking the summary expands and collapses the content.
+- Keyboard: Tab reaches the summary, Enter and Space toggle it.
+- The open state survives an unrelated LiveView patch, because the browser
+  owns `<details>`.
+
+## Accordion
+
+- The first item starts open when `open` is set.
+- Opening one item closes the others unless `multiple` is set.
+- The chevron rotates on open.
+- `disabled` renders `aria-disabled="true"`; Basecoat blocks the toggle.
+- The open item stays open across an unrelated LiveView patch.
+
+## Sidebar
+
+- `bc_sidebar_trigger` opens and closes the sidebar it names.
+- `side="left"` and `side="right"` place it physically; `data-breakpoint`
+  sets the mobile breakpoint.
+- `initial_open: "false"` starts it closed on desktop;
+  `initial_mobile_open: "true"` starts it open on mobile.
+- Clicking a link inside the mobile sidebar closes it unless the control
+  carries `data-keep-mobile-sidebar-open`.
+- `bc_sidebar_menu_sub` opens and closes natively.
+- `active` marks the current item; `data-active="true"` styles it.
+- The open state survives an unrelated LiveView patch.
+
 ## To be added
 
 These sections are filled in as later tasks land:
 
-- Accordion, collapsible
 - Alert, alert dialog
 - Bubble, message
 - Carousel
 - Chart, code block
 - Command, command dialog
 - Dropdown menu
-- Item, empty, attachment, trace
+- Attachment, trace
 - Popover
-- Sidebar
 - Tabs
 - Toast (Task 13)
 - Theme switcher
