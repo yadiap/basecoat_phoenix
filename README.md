@@ -25,7 +25,7 @@ Add the dependency to `mix.exs`:
 defp deps do
   [
     # ...
-    {:basecoat_phoenix, git: "https://github.com/yadiap/basecoat_phoenix.git", tag: "v0.2.0"}
+    {:basecoat_phoenix, git: "https://github.com/yadiap/basecoat_phoenix.git", tag: "v0.2.1"}
   ]
 end
 ```
