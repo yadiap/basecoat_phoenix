@@ -385,8 +385,39 @@ installer already wires `priv/basecoat/basecoat_live.js` through
 - Touch and trackpad scrolling work without JavaScript.
 - Slides added or removed later keep the buttons in sync.
 
-## To be added
+## Cross-cutting checks
 
-These sections are filled in as later tasks land:
+### All 15 Basecoat controllers
 
-- (none)
+Confirm each controller initializes and behaves in a real browser: accordion,
+carousel, chart, code block, combobox, command, drawer, dropdown menu, input
+OTP, popover, range, select, sidebar, tabs, toast.
+
+### Patch preservation
+
+Trigger an unrelated `phx-click` that changes another assign, and confirm the
+client state survives:
+
+- An open dropdown menu stays open.
+- A switched tab stays on the new tab.
+- A selected select or combobox value stays selected.
+- An open dialog stays open and the page stays inert.
+- A visible toast stays visible.
+- A filled OTP input keeps its digits.
+
+### Nested LiveView toast
+
+Render a nested LiveView inside the parent and push a toast from it. It must
+reach the root `#toaster`, not a second container.
+
+### Dynamic options
+
+Change the `options` assign on a select or combobox from the server. The
+refreshed list shows the new options, and a `value` set in the same update is
+applied.
+
+### Malformed multi-value submission
+
+Submit an empty or malformed JSON value for a `multiple` select or combobox.
+`BasecoatPhoenix.Forms.decode_multi/1` returns `[]` and the LiveView does not
+crash.
