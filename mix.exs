@@ -4,7 +4,7 @@ defmodule BasecoatPhoenix.MixProject do
   def project do
     [
       app: :basecoat_phoenix,
-      version: "0.2.1",
+      version: "0.2.2",
       elixir: "~> 1.15",
       start_permanent: Mix.env() == :prod,
       elixirc_paths: elixirc_paths(Mix.env()),
