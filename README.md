@@ -25,7 +25,7 @@ Add the dependency to `mix.exs`:
 defp deps do
   [
     # ...
-    {:basecoat_phoenix, git: "https://github.com/yadiap/basecoat_phoenix.git", tag: "v0.1.0"}
+    {:basecoat_phoenix, git: "https://github.com/yadiap/basecoat_phoenix.git", tag: "v0.2.0"}
   ]
 end
 ```
@@ -124,6 +124,46 @@ Table, and Tooltip.
 Copy-paste examples for every component are in
 [`docs/examples.md`](docs/examples.md). A test fails if a component ships
 without an example, so the file stays complete.
+
+## Migrating an existing Phoenix app
+
+Phoenix 1.8 generates `lib/my_app_web/components/core_components.ex` with
+daisyUI markup, and every generated template calls `<.button>`, `<.input>`,
+`<.table>`, `<.list>`, `<.header>`, `<.flash>`, and `<.icon>`. Replace the whole
+file with three lines:
+
+```elixir
+defmodule MyAppWeb.CoreComponents do
+  @moduledoc "Basecoat-backed core components."
+  use BasecoatPhoenix.CoreComponents, gettext_backend: MyAppWeb.Gettext
+end
+```
+
+Nothing else changes: `MyAppWeb` keeps `import MyAppWeb.CoreComponents`, and no
+template is edited. Same function names, same attributes, same slots, same
+`translate_error/1` and `translate_errors/2`, same `show/2` and `hide/2` JS
+commands.
+
+Then drop daisyUI from the stylesheet, which is what `mix basecoat.install
+--replace-ui` does. Basecoat's dark mode uses `html.dark`, not
+`[data-theme=dark]`.
+
+Kept as-is, on purpose:
+
+- `icon/1` still takes `hero-*` names and emits the class for the Heroicons
+  Tailwind plugin that `phx.new` configures. Basecoat's own components use
+  Lucide icons. Both can coexist until you drop the plugin.
+- `show/2` and `hide/2` are `Phoenix.LiveView.JS` transitions, not styling.
+
+Changed on purpose:
+
+- A caller `class` is appended to the Basecoat classes instead of replacing
+  them, so `class="w-full"` no longer silently drops `btn`.
+- `:error_class` is accepted and ignored. Basecoat styles invalid inputs through
+  `aria-invalid`, so there is no error class to override.
+
+New UI should use the `bc_*` components directly; the drop-in exists so old
+templates keep working while you move.
 
 ## CSP
 
