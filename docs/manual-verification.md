@@ -269,13 +269,39 @@ installer already wires `priv/basecoat/basecoat_live.js` through
 - `meta` renders the trailing `<small>` for a duration or count.
 - The chevron comes from CSS, so no extra markup is needed.
 
+## Table
+
+- `bc_table_container` scrolls horizontally when the table is wider than its
+  parent.
+- Caption, header, body, and footer render the native elements.
+- `scope="col"` on `bc_table_head` and `colspan`/`rowspan` on cells pass
+  through.
+
+## Code Block
+
+- The header shows the title on the start edge and the actions on the end
+  edge.
+- The Copy button copies the visible code and shows its copied state.
+- `data-line-numbers` on the `<pre>` numbers each line; the numbers are
+  excluded from selection and from the copied text.
+- `data-size="sm"` shrinks the block.
+- Copy needs HTTPS or localhost; a failure is announced, not faked.
+
+## Chart
+
+- With Chart.js loaded, the canvas draws the chart and the legend renders
+  below it.
+- Changing the chart data through a LiveView update redraws the canvas.
+- Without Chart.js, the console logs one clear error and the page still
+  renders.
+- The canvas needs no wrapper; Basecoat adds its own sizing container.
+
 ## To be added
 
 These sections are filled in as later tasks land:
 
 - Alert dialog
 - Carousel
-- Chart, code block
 - Command, command dialog
 - Dropdown menu
 - Popover

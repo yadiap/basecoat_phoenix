@@ -48,6 +48,9 @@ defmodule BasecoatPhoenix.Components do
       import BasecoatPhoenix.Components.Marker
       import BasecoatPhoenix.Components.Attachment
       import BasecoatPhoenix.Components.Trace
+      import BasecoatPhoenix.Components.Table
+      import BasecoatPhoenix.Components.CodeBlock
+      import BasecoatPhoenix.Components.Chart
     end
   end
 end
