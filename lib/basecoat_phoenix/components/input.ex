@@ -36,13 +36,13 @@ defmodule BasecoatPhoenix.Components.Input do
     ~H"""
     <input
       type={@type}
-      class={classes(["input", @class])}
-      id={@resolved.id}
       name={@resolved.name}
+      id={@resolved.id}
       value={@resolved.value}
       placeholder={@placeholder}
       aria-invalid={@resolved.invalid? && "true"}
       aria-describedby={@resolved.describedby}
+      class={classes(["input", @class])}
       {@rest}
     />
     """

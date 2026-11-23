@@ -230,6 +230,20 @@ defmodule BasecoatPhoenix.CoreComponentsTest do
              "should be at least 3 character(s)"
   end
 
+  test "translate_error ignores bindings the message does not use" do
+    # Ecto's unsafe_validate_unique adds `fields: [:email]`, a list. Gettext
+    # never stringifies it because the message has no placeholder for it.
+    assert CoreComponents.translate_error({"has already been taken", fields: [:email]}) ==
+             "has already been taken"
+  end
+
+  test "input keeps the stock attribute order" do
+    form = to_form(%{"email" => "a@b.c"}, as: :user)
+    html = shape(:field, %{form: form})
+
+    assert html =~ ~s{<input type="email" name="user[email]" id="user_email" value="a@b.c"}
+  end
+
   test "translate_errors filters by field" do
     errors = [email: {"can't be blank", []}, name: {"too short", []}]
     assert CoreComponents.translate_errors(errors, :email) == ["can't be blank"]

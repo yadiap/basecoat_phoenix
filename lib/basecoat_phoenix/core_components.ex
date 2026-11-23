@@ -63,9 +63,15 @@ defmodule BasecoatPhoenix.CoreComponents do
 
   @doc false
   # Gettext-less fallback: replace `%{key}` placeholders with the values.
+  #
+  # Only placeholders present in the message are read, so opts that carry
+  # non-string data (`fields: [:email]`) do not raise. Gettext behaves the same.
   def interpolate(message, opts) do
-    Enum.reduce(opts, to_string(message), fn {key, value}, acc ->
-      String.replace(acc, "%{#{key}}", to_string(value))
+    Regex.replace(~r/%\{(\w+)\}/, to_string(message), fn _, key ->
+      case Enum.find(opts, fn {name, _} -> Atom.to_string(name) == key end) do
+        {_, value} -> to_string(value)
+        nil -> "%{#{key}}"
+      end
     end)
   end
 
