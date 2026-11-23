@@ -25,7 +25,7 @@ Add the dependency to `mix.exs`:
 defp deps do
   [
     # ...
-    {:basecoat_phoenix, git: "https://github.com/yadiap/basecoat_phoenix.git", tag: "v0.2.2"}
+    {:basecoat_phoenix, git: "https://github.com/yadiap/basecoat_phoenix.git", tag: "v0.3.0"}
   ]
 end
 ```
@@ -53,7 +53,8 @@ mix basecoat.install
 
 It copies the vendored assets into `assets/vendor/basecoat/`, imports the
 Basecoat CSS in `assets/css/app.css`, adds the `@source` line that makes Tailwind
-scan the components, and merges `BasecoatHooks` into `assets/js/app.js`.
+scan the components, merges `BasecoatHooks` into `assets/js/app.js`, and creates
+`assets/css/theme.css` for your design tokens (see [Theming](#theming)).
 
 The `@source` line points at the library source inside `deps/`. Re-run
 `mix basecoat.install` after upgrading the dependency so the path stays correct.
@@ -123,6 +124,37 @@ your content wrapper, so the wrapper immediately follows it and receives the
 desktop margin. Keep `bc_sidebar_header`, `bc_sidebar_content`, and
 `bc_sidebar_footer` inside `bc_sidebar_nav`. See
 [`docs/examples.md`](docs/examples.md#sidebar).
+
+## Theming
+
+Basecoat ships the [shadcn/ui design tokens](https://ui.shadcn.com/docs/theming)
+in `:root` and `.dark`, and maps them to Tailwind utilities, so a theme built
+for shadcn/ui applies unchanged.
+
+The installer creates `assets/css/theme.css` next to `app.css` and imports it
+right after the Basecoat CSS. That file is yours: it is created once and never
+overwritten by a re-install.
+
+To apply a theme from [tweakcn](https://tweakcn.com/editor/theme), open
+`assets/css/theme.css`, paste the exported `:root` and `.dark` blocks below the
+existing rules, and rebuild:
+
+```bash
+mix assets.build
+```
+
+That covers colors, radius, fonts, shadows, and tracking. Dark mode reads the
+`html.dark` class, which is exactly what a `.dark` block expects.
+
+The file also maps the two tokens Basecoat's own theme block omits, so shadcn
+snippets that use them work:
+
+- `--font-serif`, the `font-serif` utility.
+- `--destructive-foreground`, so `bg-destructive text-destructive-foreground`
+  renders the solid destructive pair instead of an unstyled pair.
+
+Fonts named by a theme are not bundled; load them yourself (for example
+`@font-face` rules in `app.css`).
 
 ## Components
 

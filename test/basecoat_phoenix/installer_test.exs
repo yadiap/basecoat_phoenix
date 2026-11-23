@@ -90,6 +90,29 @@ defmodule BasecoatPhoenix.InstallerTest do
     assert File.exists?(ctx.css_path <> ".bak")
   end
 
+  test "creates theme.css and imports it after the Basecoat CSS", ctx do
+    assert {:ok, _} = install(ctx)
+
+    theme_path = Path.join(Path.dirname(ctx.css_path), "theme.css")
+    assert File.exists?(theme_path)
+
+    css = File.read!(ctx.css_path)
+
+    assert css =~
+             ~s|@import "../vendor/basecoat/basecoat.css";\n@import "./theme.css";|
+
+    assert File.read!(theme_path) =~ "--color-destructive-foreground"
+  end
+
+  test "never overwrites a pasted theme", ctx do
+    theme_path = Path.join(Path.dirname(ctx.css_path), "theme.css")
+    File.write!(theme_path, ":root { --primary: red; }\n")
+
+    assert {:ok, messages} = install(ctx)
+    assert Enum.any?(messages, &(&1 =~ "kept: #{theme_path}"))
+    assert File.read!(theme_path) == ":root { --primary: red; }\n"
+  end
+
   test "dark mode uses the html.dark contract", ctx do
     assert {:ok, _} = install(ctx)
 

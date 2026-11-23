@@ -26,6 +26,38 @@ defmodule BasecoatPhoenix.Installer do
     ~r/Gettext\.dgettext\(\s*([A-Z][\w.]*),/
   ]
 
+  @theme_file "theme.css"
+  @theme_import ~s(@import "./#{@theme_file}";)
+
+  @theme_template """
+  /* Basecoat theme tokens.
+   *
+   * Basecoat ships the shadcn/ui design tokens in :root and .dark, so a theme
+   * built for shadcn/ui applies unchanged. Paste its blocks here and rebuild
+   * assets with `mix assets.build`.
+   *
+   * Theme from https://tweakcn.com/editor/theme: copy the exported `:root` and
+   * `.dark` blocks below this comment. Dark mode reads the `html.dark` class,
+   * which is what a `.dark` block expects.
+   *
+   * The rules below add the tokens Basecoat's own theme block leaves out.
+   */
+
+  :root {
+    --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+    --destructive-foreground: oklch(0.985 0 0);
+  }
+
+  .dark {
+    --destructive-foreground: oklch(0.205 0 0);
+  }
+
+  @theme inline {
+    --font-serif: var(--font-serif);
+    --color-destructive-foreground: var(--destructive-foreground);
+  }
+  """
+
   @spec install(keyword()) :: {:ok, [String.t()]} | {:error, String.t()}
   def install(opts \\ []) do
     root = opts[:root] || File.cwd!()
@@ -69,6 +101,7 @@ defmodule BasecoatPhoenix.Installer do
     css =
       css
       |> CSS.insert_after(@tailwind_import, ~s(@import "#{basecoat_css}";))
+      |> CSS.insert_after(~s(@import "#{basecoat_css}";), @theme_import)
       |> append_once(~s(@source "#{source_path}";))
       |> maybe_typeset(opts, vendor, css_dir, basecoat_css)
 
@@ -83,6 +116,8 @@ defmodule BasecoatPhoenix.Installer do
       else
         messages
       end
+
+    messages = ensure_theme_file(Path.join(css_dir, @theme_file), dry_run, messages)
 
     messages = maybe_write(messages, css_path, css, dry_run)
     messages = maybe_write(messages, js_path, js, dry_run)
@@ -128,6 +163,17 @@ defmodule BasecoatPhoenix.Installer do
   defp maybe_write(messages, path, content, dry_run) do
     unless dry_run, do: File.write!(path, content)
     ["wrote: #{path}" | messages]
+  end
+
+  # The theme file belongs to the app: a re-run must never overwrite a pasted
+  # theme, so it is written only once.
+  defp ensure_theme_file(path, dry_run, messages) do
+    if File.exists?(path) do
+      ["kept: #{path}" | messages]
+    else
+      unless dry_run, do: File.write!(path, @theme_template)
+      ["wrote: #{path}" | messages]
+    end
   end
 
   defp maybe_typeset(css, opts, vendor, css_dir, basecoat_css) do

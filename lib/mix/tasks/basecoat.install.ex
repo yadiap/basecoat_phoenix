@@ -24,6 +24,10 @@ defmodule Mix.Tasks.Basecoat.Install do
       `lib/*_web/components/core_components.ex`)
     * `--assets-path`, `--css`, `--js`, `--source-path` - override the default
       paths
+
+  The installer also creates `theme.css` next to `app.css` and imports it after
+  the Basecoat CSS. Paste a shadcn/ui or tweakcn theme there; the file is
+  created once and never overwritten.
   """
 
   @switches [
