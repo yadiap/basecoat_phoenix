@@ -215,17 +215,69 @@ installer already wires `priv/basecoat/basecoat_live.js` through
 - `active` marks the current item; `data-active="true"` styles it.
 - The open state survives an unrelated LiveView patch.
 
+## Alert
+
+- The icon, title, description, and actions render as direct children in the
+  upstream order.
+- `variant="destructive"` recolors the alert.
+- Actions land in a `<footer>` pinned to the inline end.
+
+## Bubble
+
+- The bubble sizes to its content, up to 80% of its container.
+- `variant` accepts `secondary`, `muted`, `tinted`, `outline`, `ghost`, and
+  `destructive`.
+- `align="end"` puts an outgoing message on the inline end edge.
+- Each `:reactions` entry renders a direct `<div role="img">` with the label
+  you give it.
+- `bc_bubble_group` stacks tightly spaced bubbles.
+- A link or button as the content makes the whole bubble interactive.
+
+## Message
+
+- `bc_message_group` renders the `<ol role="list">`; each `bc_message` is one
+  row.
+- The avatar, sender, and bubble are yours to compose inside the message.
+- `align="end"` reverses the row for outgoing messages.
+- `as="div"` renders a standalone message outside a list.
+- `bc_message_group` with `class="message-group"` hides the repeated avatar.
+
+## Marker
+
+- An optional `:icon` renders a decorative SVG before the text.
+- `variant="separator"` draws rules on both sides; `border` draws a row border.
+- `shimmer` animates the text; it stays static under reduced motion.
+- `role="status"` announces updates when you set it.
+
+## Attachment
+
+- The root is a `<div>`; `as="li"` renders a list item.
+- Media, content, and actions render in upstream order.
+- `orientation="vertical"` stacks the thumbnail above the label.
+- `state="uploading"` or `"error"` colors the card.
+- A direct `<a>` or `<button>` child makes the whole card clickable; keep
+  action buttons in the final actions wrapper.
+- `attachment-group` on the surrounding list gives the horizontal scroll strip.
+
+## Trace
+
+- `bc_trace` renders the `<ol role="list">`; each `bc_trace_item` is a step.
+- `details` turns the line into a `<summary>` that expands the detail; `open`
+  starts it expanded.
+- Without `details`, the line renders statically; `as="p"` or `href` picks a
+  paragraph or a link.
+- `meta` renders the trailing `<small>` for a duration or count.
+- The chevron comes from CSS, so no extra markup is needed.
+
 ## To be added
 
 These sections are filled in as later tasks land:
 
-- Alert, alert dialog
-- Bubble, message
+- Alert dialog
 - Carousel
 - Chart, code block
 - Command, command dialog
 - Dropdown menu
-- Attachment, trace
 - Popover
 - Tabs
 - Toast (Task 13)

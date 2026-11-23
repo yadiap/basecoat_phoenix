@@ -42,6 +42,12 @@ defmodule BasecoatPhoenix.Components do
       import BasecoatPhoenix.Components.Collapsible
       import BasecoatPhoenix.Components.Accordion
       import BasecoatPhoenix.Components.Sidebar
+      import BasecoatPhoenix.Components.Alert
+      import BasecoatPhoenix.Components.Bubble
+      import BasecoatPhoenix.Components.Message
+      import BasecoatPhoenix.Components.Marker
+      import BasecoatPhoenix.Components.Attachment
+      import BasecoatPhoenix.Components.Trace
     end
   end
 end
