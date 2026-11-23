@@ -315,15 +315,18 @@ Add `multiple` to allow several open items at once.
 
 ## Sidebar
 
-```heex
-<.bc_sidebar_trigger sidebar="app-sidebar">Menu</.bc_sidebar_trigger>
+The sidebar must be a sibling of the content wrapper: the wrapper that
+immediately follows it receives the desktop margin. Basecoat styles
+`.sidebar > nav`, so keep the header, content, and footer inside
+`bc_sidebar_nav`.
 
+```heex
 <.bc_sidebar id="app-sidebar" side="left">
-  <.bc_sidebar_header>
-    <.bc_button href="/" variant="ghost">Acme</.bc_button>
-  </.bc_sidebar_header>
-  <.bc_sidebar_content>
-    <.bc_sidebar_nav label="Main">
+  <.bc_sidebar_nav label="Main">
+    <.bc_sidebar_header>
+      <.bc_button href="/" variant="ghost">Acme</.bc_button>
+    </.bc_sidebar_header>
+    <.bc_sidebar_content>
       <.bc_sidebar_group id="projects-group" label="Projects">
         <.bc_sidebar_menu>
           <.bc_sidebar_menu_item>
@@ -345,12 +348,17 @@ Add `multiple` to allow several open items at once.
           </.bc_sidebar_menu_item>
         </.bc_sidebar_menu>
       </.bc_sidebar_group>
-    </.bc_sidebar_nav>
-  </.bc_sidebar_content>
-  <.bc_sidebar_footer>
-    <.bc_theme_switcher />
-  </.bc_sidebar_footer>
+    </.bc_sidebar_content>
+    <.bc_sidebar_footer>
+      <.bc_theme_switcher />
+    </.bc_sidebar_footer>
+  </.bc_sidebar_nav>
 </.bc_sidebar>
+
+<main>
+  <.bc_sidebar_trigger sidebar="app-sidebar">Menu</.bc_sidebar_trigger>
+  <h1>Content</h1>
+</main>
 ```
 
 ## Breadcrumb

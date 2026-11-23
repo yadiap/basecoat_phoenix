@@ -4,6 +4,26 @@ defmodule BasecoatPhoenix.Components.Sidebar do
 
   `bc_sidebar_trigger` calls `toggle()` on the sidebar it names, through
   `basecoat_live.js`.
+
+  ## Placement
+
+  Basecoat styles `.sidebar > nav`, so `bc_sidebar_header`,
+  `bc_sidebar_content`, and `bc_sidebar_footer` must be direct children of
+  `bc_sidebar_nav`. The sidebar itself must be a sibling of the content
+  wrapper: the element that immediately follows it receives the desktop
+  margin, which keeps the fixed sidebar from covering the page.
+
+      <.bc_sidebar id="app-sidebar">
+        <.bc_sidebar_nav label="Main">
+          <.bc_sidebar_header>Acme</.bc_sidebar_header>
+          <.bc_sidebar_content>...</.bc_sidebar_content>
+          <.bc_sidebar_footer>Account</.bc_sidebar_footer>
+        </.bc_sidebar_nav>
+      </.bc_sidebar>
+
+      <main>
+        <.bc_sidebar_trigger sidebar="app-sidebar">Menu</.bc_sidebar_trigger>
+      </main>
   """
   use Phoenix.Component
   import BasecoatPhoenix.Components.Semantic, only: [classes: 1]
@@ -60,12 +80,15 @@ defmodule BasecoatPhoenix.Components.Sidebar do
     """
   end
 
+  attr(:class, :string, default: nil)
   attr(:rest, :global)
   slot(:inner_block, required: true)
 
   def bc_sidebar_content(assigns) do
     ~H"""
-    <section {@rest}>{render_slot(@inner_block)}</section>
+    <section class={classes(["scrollbar", "scrollbar-thin", @class])} {@rest}>
+      {render_slot(@inner_block)}
+    </section>
     """
   end
 

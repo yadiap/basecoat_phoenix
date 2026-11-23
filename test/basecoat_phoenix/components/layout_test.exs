@@ -255,7 +255,7 @@ defmodule BasecoatPhoenix.Components.LayoutTest do
     nav = one(root, "nav")
     assert attr(nav, "aria-label") == "Sidebar navigation"
     assert one(nav, "header")
-    assert one(nav, "section")
+    assert attr(one(nav, "section"), "class") == "scrollbar scrollbar-thin"
     assert one(nav, "footer")
 
     group = one(nav, "div[role=group]")

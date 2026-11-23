@@ -111,6 +111,12 @@ Then render components:
 </.bc_card>
 ```
 
+Sidebars have one structural rule: render `bc_sidebar` as a sibling before
+your content wrapper, so the wrapper immediately follows it and receives the
+desktop margin. Keep `bc_sidebar_header`, `bc_sidebar_content`, and
+`bc_sidebar_footer` inside `bc_sidebar_nav`. See
+[`docs/examples.md`](docs/examples.md#sidebar).
+
 ## Components
 
 51 upstream components, plus one convenience helper (`bc_spinner`, which
