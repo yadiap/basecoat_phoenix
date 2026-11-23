@@ -4,11 +4,12 @@ defmodule BasecoatPhoenix.MixProject do
   def project do
     [
       app: :basecoat_phoenix,
-      version: "0.3.1",
+      version: "0.4.0",
       elixir: "~> 1.15",
       start_permanent: Mix.env() == :prod,
       elixirc_paths: elixirc_paths(Mix.env()),
       deps: deps(),
+      docs: [extras: ["README.md", "docs/examples.md"]],
       description: "Basecoat UI components for Phoenix LiveView",
       package: package()
     ]

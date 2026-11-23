@@ -261,15 +261,45 @@ The code body is yours: put `data-line-numbers` on the `<pre>` to number lines.
 
 ## Chart
 
+Chart.js must be loaded by the app; `mix basecoat.install --chart` vendors it.
+
+Every Chart.js type has a wrapper. Use `bc_chart` when the type is dynamic.
+
 ```heex
-<.bc_chart
+<.bc_chart id="visitors" type={@type} label_key="month" data={@rows} series={@series} />
+```
+
+Most snippets below reuse these two assigns:
+
+```elixir
+def mount(_params, _session, socket) do
+  rows = [
+    %{month: "Jan", desktop: 186, mobile: 80},
+    %{month: "Feb", desktop: 305, mobile: 200},
+    %{month: "Mar", desktop: 237, mobile: 120}
+  ]
+
+  sources = [
+    %{source: "Direct", visitors: 320, color: "var(--chart-1)"},
+    %{source: "Search", visitors: 240, color: "var(--chart-2)"},
+    %{source: "Social", visitors: 130, color: "var(--chart-3)"}
+  ]
+
+  {:ok, assign(socket, rows: rows, sources: sources)}
+end
+```
+
+### Bar
+
+```heex
+<.bc_bar_chart
   id="visitors"
-  type="bar"
   label_key="month"
   legend
   data={[
     %{month: "Jan", desktop: 186, mobile: 80},
-    %{month: "Feb", desktop: 305, mobile: 200}
+    %{month: "Feb", desktop: 305, mobile: 200},
+    %{month: "Mar", desktop: 237, mobile: 120}
   ]}
   series={%{
     desktop: %{label: "Desktop", color: "var(--chart-1)"},
@@ -278,7 +308,200 @@ The code body is yours: put `data-line-numbers` on the `<pre>` to number lines.
 />
 ```
 
-Chart.js must be loaded by the app; `mix basecoat.install --chart` vendors it.
+Stack the series by giving each one the same `stack` and turning it on in the
+options:
+
+```heex
+<.bc_bar_chart
+  id="pipeline"
+  label_key="month"
+  legend
+  data={@rows}
+  series={%{
+    desktop: %{label: "Desktop", color: "var(--chart-1)", dataset: %{stack: "visitors"}},
+    mobile: %{label: "Mobile", color: "var(--chart-2)", dataset: %{stack: "visitors"}}
+  }}
+  options={%{scales: %{x: %{stacked: true}, y: %{stacked: true}}}}
+/>
+```
+
+Turn the bars sideways with `indexAxis`:
+
+```heex
+<.bc_bar_chart
+  id="tasks"
+  label_key="month"
+  data={@rows}
+  series={%{desktop: %{label: "Desktop", color: "var(--chart-1)"}}}
+  options={%{indexAxis: "y"}}
+/>
+```
+
+### Line
+
+```heex
+<.bc_line_chart
+  id="revenue"
+  label_key="month"
+  legend
+  data={[
+    %{month: "Jan", recurring: 320, new: 180},
+    %{month: "Feb", recurring: 410, new: 220},
+    %{month: "Mar", recurring: 390, new: 260}
+  ]}
+  series={%{
+    recurring: %{label: "Recurring", color: "var(--chart-1)"},
+    new: %{label: "New", color: "var(--chart-2)"}
+  }}
+/>
+```
+
+Step line: add `stepped` to the dataset.
+
+```heex
+<.bc_line_chart
+  id="queue"
+  label_key="month"
+  data={@rows}
+  series={%{open: %{label: "Open", color: "var(--chart-3)", dataset: %{stepped: true}}}}
+/>
+```
+
+Area: give the series a surface and fill it.
+
+```heex
+<.bc_line_chart
+  id="traffic"
+  label_key="month"
+  data={@rows}
+  series={%{
+    desktop: %{
+      label: "Desktop",
+      color: "var(--chart-1)",
+      surface: "gradient",
+      dataset: %{fill: true, tension: 0.35}
+    }
+  }}
+/>
+```
+
+### Pie
+
+Pie, doughnut, and polar area take one series key. Color each slice on the row.
+
+```heex
+<.bc_pie_chart
+  id="traffic-pie"
+  label_key="source"
+  legend
+  data={@sources}
+  series={%{visitors: %{label: "Visitors"}}}
+/>
+```
+
+### Doughnut
+
+```heex
+<.bc_doughnut_chart
+  id="traffic-doughnut"
+  label_key="source"
+  legend
+  data={@sources}
+  series={%{visitors: %{label: "Visitors"}}}
+/>
+```
+
+### Polar area
+
+```heex
+<.bc_polar_area_chart
+  id="channels"
+  label_key="source"
+  legend
+  data={@sources}
+  series={%{visitors: %{label: "Visitors"}}}
+/>
+```
+
+### Radar
+
+```heex
+<.bc_radar_chart
+  id="channels-radar"
+  label_key="channel"
+  legend
+  data={[
+    %{channel: "Email", open: 120, click: 80},
+    %{channel: "Ads", open: 90, click: 60},
+    %{channel: "Social", open: 140, click: 110},
+    %{channel: "Search", open: 100, click: 70}
+  ]}
+  series={%{
+    open: %{label: "Open", color: "var(--chart-1)"},
+    click: %{label: "Click", color: "var(--chart-2)"}
+  }}
+/>
+```
+
+### Scatter
+
+Scatter and bubble take complete Chart.js data, because each point carries its
+own `x` and `y`.
+
+```heex
+<.bc_scatter_chart
+  id="samples"
+  chart_data={%{
+    datasets: [
+      %{
+        label: "Samples",
+        data: [%{x: 1, y: 2}, %{x: 2, y: 5}, %{x: 3, y: 3}, %{x: 4, y: 6}],
+        backgroundColor: "var(--chart-1)",
+        borderColor: "var(--chart-1)"
+      }
+    ]
+  }}
+  options={%{scales: %{x: %{type: "linear"}}}}
+/>
+```
+
+### Bubble
+
+Each bubble adds `r`, its radius.
+
+```heex
+<.bc_bubble_chart
+  id="deals"
+  chart_data={%{
+    datasets: [
+      %{
+        label: "Deals",
+        data: [%{x: 10, y: 20, r: 12}, %{x: 15, y: 10, r: 8}, %{x: 22, y: 18, r: 16}],
+        backgroundColor: "color-mix(in oklab, var(--chart-2) 50%, transparent)",
+        borderColor: "var(--chart-2)"
+      }
+    ]
+  }}
+  options={%{scales: %{x: %{type: "linear"}}}}
+/>
+```
+
+### Mixed
+
+A series with its own `type` mixes chart types on one canvas.
+
+```heex
+<.bc_bar_chart
+  id="mixed"
+  label_key="month"
+  legend
+  data={@rows}
+  series={%{
+    desktop: %{label: "Desktop", color: "var(--chart-1)"},
+    mobile: %{label: "Mobile", color: "var(--chart-2)", type: "line"}
+  }}
+/>
+```
 
 ## Collapsible
 

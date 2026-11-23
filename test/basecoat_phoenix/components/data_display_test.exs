@@ -71,6 +71,28 @@ defmodule BasecoatPhoenix.Components.DataDisplayFixture do
     />
     """
   end
+
+  def charts(assigns) do
+    ~H"""
+    <.bc_bar_chart id="bar" data={rows()} series={%{value: %{label: "Value"}}} />
+    <.bc_line_chart id="line" data={rows()} series={%{value: %{label: "Value"}}} />
+    <.bc_pie_chart id="pie" data={rows()} series={%{value: %{label: "Value"}}} />
+    <.bc_doughnut_chart id="doughnut" data={rows()} series={%{value: %{label: "Value"}}} />
+    <.bc_polar_area_chart id="polar" data={rows()} series={%{value: %{label: "Value"}}} />
+    <.bc_radar_chart id="radar" data={rows()} series={%{value: %{label: "Value"}}} />
+    <.bc_scatter_chart
+      id="scatter"
+      aria-label="Samples"
+      chart_data={%{datasets: [%{label: "Samples", data: [%{x: 1, y: 2}]}]}}
+      options={%{scales: %{x: %{type: "linear"}}}}
+    />
+    <.bc_bubble_chart id="bubble" chart_data={%{datasets: [%{label: "Deals", data: []}]}} />
+    """
+  end
+
+  defp rows do
+    [%{label: "A", value: 1}, %{label: "B", value: 2}]
+  end
 end
 
 defmodule BasecoatPhoenix.Components.DataDisplayTest do
@@ -148,5 +170,34 @@ defmodule BasecoatPhoenix.Components.DataDisplayTest do
 
     series = canvas |> attr("data-chart-series") |> Jason.decode!()
     assert series == %{"desktop" => %{"label" => "Desktop", "color" => "var(--chart-1)"}}
+  end
+
+  test "each chart type has a wrapper that sets only the type" do
+    html = render(&BasecoatPhoenix.Components.DataDisplayFixture.charts/1, %{})
+
+    for {id, type} <- [
+          bar: "bar",
+          line: "line",
+          pie: "pie",
+          doughnut: "doughnut",
+          polar: "polarArea",
+          radar: "radar",
+          scatter: "scatter",
+          bubble: "bubble"
+        ] do
+      canvas = one(html, "canvas##{id}")
+      assert canvas, "missing wrapper canvas ##{id}"
+      assert attr(canvas, "data-chart-type") == type
+      assert attr(canvas, "phx-hook") == "BasecoatChart"
+    end
+
+    scatter = one(html, "canvas#scatter")
+    assert attr(scatter, "aria-label") == "Samples"
+
+    assert scatter |> attr("data-chart-options") |> Jason.decode!() ==
+             %{"scales" => %{"x" => %{"type" => "linear"}}}
+
+    assert scatter |> attr("data-chart-chart-data") |> Jason.decode!() ==
+             %{"datasets" => [%{"label" => "Samples", "data" => [%{"x" => 1, "y" => 2}]}]}
   end
 end

@@ -25,7 +25,7 @@ Add the dependency to `mix.exs`:
 defp deps do
   [
     # ...
-    {:basecoat_phoenix, git: "https://github.com/yadiap/basecoat_phoenix.git", tag: "v0.3.1"}
+    {:basecoat_phoenix, git: "https://github.com/yadiap/basecoat_phoenix.git", tag: "v0.4.0"}
   ]
 end
 ```
@@ -238,6 +238,13 @@ attribute on the component root or re-render the subtree.
 `bc_chart` renders a bare `<canvas>` plus the `data-chart-*` configuration. The
 app must load Chart.js and Basecoat's chart script before the chart hook runs.
 Without them, the console logs one clear error and the page still renders.
+
+One wrapper per Chart.js type: `bc_bar_chart`, `bc_line_chart`, `bc_pie_chart`,
+`bc_doughnut_chart`, `bc_polar_area_chart`, `bc_radar_chart`,
+`bc_scatter_chart`, `bc_bubble_chart`. Each takes the same attributes as
+`bc_chart` without `type`. Stacked, horizontal, step, area, and mixed charts are
+`series`/`options` settings on those wrappers. See
+[docs/examples.md](docs/examples.md#chart) for a complete example of every type.
 
 Let the installer vendor both:
 

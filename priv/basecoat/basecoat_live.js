@@ -229,7 +229,27 @@ export const BasecoatState = {
   },
 };
 
-const CHART_KEYS = ["data-chart-data", "data-chart-series", "data-chart-type"];
+const CHART_KEYS = [
+  "data-chart-data",
+  "data-chart-series",
+  "data-chart-type",
+  "data-chart-label-key",
+  "data-chart-legend",
+  "data-chart-tooltip",
+  "data-chart-options",
+  "data-chart-chart-data",
+];
+
+const parseJson = (el, name) => {
+  const raw = el.getAttribute(name);
+  if (!raw) return undefined;
+  try {
+    return JSON.parse(raw);
+  } catch {
+    console.error(`Basecoat chart ignored invalid JSON in ${name}.`);
+    return undefined;
+  }
+};
 
 export const BasecoatChart = {
   mounted() {
@@ -255,8 +275,14 @@ export const BasecoatChart = {
       return;
     }
 
+    // The controller reads type, labelKey, legend, tooltip, data, and series
+    // from data-chart-* itself. options and chartData have no attribute
+    // fallback, so pass them explicitly.
+    const options = { options: parseJson(canvas, "data-chart-options") };
+    const chartData = { chartData: parseJson(canvas, "data-chart-chart-data") };
+
     canvas._basecoatChart?.destroy?.();
-    window.basecoat.chart(canvas, {});
+    window.basecoat.chart(canvas, { ...options, ...chartData });
     canvas._basecoatChart = window.Chart.getChart?.(canvas) || canvas._basecoatChart;
     this._signature = CHART_KEYS.map((key) => canvas.getAttribute(key)).join("\u0000");
   },
