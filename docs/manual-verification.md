@@ -340,11 +340,53 @@ installer already wires `priv/basecoat/basecoat_live.js` through
 - A theme change survives LiveView patches.
 - The tooltip renders below the button.
 
+## Alert Dialog
+
+- The trigger opens the dialog modally; the user must pick an action.
+- No close button and no backdrop close, matching upstream.
+- Escape still closes natively; keep a cancel action for keyboard users.
+- `size="sm"` gives the compact centered layout.
+- The optional `figure` slot puts an icon or image above the title.
+
+## Drawer
+
+- Each side slides from its edge; no `side` gives the bottom drawer.
+- Backdrop click and Escape close it with the exit animation.
+- The body scrolls; the header and footer stay put.
+- There is no drag handle or snap point; upstream omits them too.
+
+## Sheet
+
+- Defaults to the right edge; `side` moves it.
+- Backdrop click, Escape, and the close button all close it.
+- `close_button={false}` removes the close control.
+
+## Popover
+
+- The trigger toggles `aria-expanded` and the content's `aria-hidden`.
+- An outside click closes it.
+- `side` and `align` position the panel against the trigger.
+- An open popover survives an unrelated LiveView update.
+
+## Toast
+
+- One `bc_toaster` per layout, at the end of the body.
+- `BasecoatPhoenix.Toast.push/2` shows a toast in it, including from a nested
+  LiveView.
+- New toasts stack; hover or focus expands the stack.
+- `category="error"` renders `role="alert"`; everything else uses `status`.
+- `duration="-1"` keeps a toast open; `close_button={false}` removes the icon.
+- A server-rendered `bc_toast` inside the toaster is initialized on mount.
+
+## Carousel
+
+- Previous and Next appear after Basecoat initializes and hide at the ends.
+- Arrow keys scroll when the list or a button has focus.
+- Touch and trackpad scrolling work without JavaScript.
+- Slides added or removed later keep the buttons in sync.
+
 ## To be added
 
 These sections are filled in as later tasks land:
 
-- Alert dialog
-- Carousel
-- Popover
-- Toast (Task 13)
+- (none)

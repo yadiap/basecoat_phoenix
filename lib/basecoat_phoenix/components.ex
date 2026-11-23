@@ -57,6 +57,12 @@ defmodule BasecoatPhoenix.Components do
       import BasecoatPhoenix.Components.DropdownMenu
       import BasecoatPhoenix.Components.Command
       import BasecoatPhoenix.Components.ThemeSwitcher
+      import BasecoatPhoenix.Components.AlertDialog
+      import BasecoatPhoenix.Components.Drawer
+      import BasecoatPhoenix.Components.Sheet
+      import BasecoatPhoenix.Components.Popover
+      import BasecoatPhoenix.Components.Toast
+      import BasecoatPhoenix.Components.Carousel
     end
   end
 end
