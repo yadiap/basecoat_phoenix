@@ -87,12 +87,18 @@ Press <.bc_kbd>⌘K</.bc_kbd> to search.
 <.bc_spinner label="Saving" class="size-4" />
 ```
 
+`label` renders visible text next to the spinner; the SVG is then
+`aria-hidden` and the wrapper carries `role="status"`.
+
 ## Progress
 
 ```heex
 <.bc_progress value={30} label="Upload" />
 <.bc_progress value={7} max={10} label="Steps" />
 ```
+
+`label` renders the upstream labeled layout: label and percentage above the
+bar. Omit it for a bare bar.
 
 ## Avatar
 

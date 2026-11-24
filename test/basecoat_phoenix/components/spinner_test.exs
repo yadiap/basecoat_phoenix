@@ -17,4 +17,24 @@ defmodule BasecoatPhoenix.Components.SpinnerTest do
     html = render(&Spinner.bc_spinner/1, %{class: "size-3"})
     assert classes(one(html, "svg")) |> Enum.member?("size-3")
   end
+
+  test "bc_spinner renders the label as visible text" do
+    html = render(&Spinner.bc_spinner/1, %{label: "Saving"})
+
+    root = one(html, "span[role=status]")
+    assert root
+    assert one(root, "span") |> text() == "Saving"
+
+    svg = one(root, "svg")
+    assert attr(svg, "aria-hidden") == "true"
+    refute attr(svg, "aria-label")
+  end
+
+  test "bc_spinner keeps the label alongside a size class" do
+    html = render(&Spinner.bc_spinner/1, %{label: "Saving", class: "size-4"})
+
+    svg = one(html, "svg")
+    assert classes(svg) |> Enum.member?("size-4")
+    assert one(html, "span[role=status] > span") |> text() == "Saving"
+  end
 end
