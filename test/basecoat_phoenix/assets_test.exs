@@ -53,11 +53,17 @@ defmodule BasecoatPhoenix.AssetsTest do
       # has no icon padding to adjust.
       if style != "sera" do
         assert css =~ "has-[[data-icon='inline-start']]:ps-1.5",
-               "#{style}: badge icon padding missing"
+               "#{style}: badge icon start padding missing"
+
+        assert css =~ "has-[[data-icon='inline-end']]:pe-1.5",
+               "#{style}: badge icon end padding missing"
       end
 
       assert css =~ "&:focus-visible:before",
              "#{style}: tooltip keyboard focus missing"
+
+      assert css =~ "focus-visible:bg-accent focus-visible:text-accent-foreground",
+             "#{style}: dropdown active item still uses the muted color"
 
       assert css =~
                ".select:not(select) [role='option'].active,\n  .select:not(select) [role='option']:focus-visible {\n    @apply bg-accent",
@@ -68,6 +74,8 @@ defmodule BasecoatPhoenix.AssetsTest do
   # LiveView's join patch drops Basecoat's init markers. A plain initAll on
   # phx:page-loading-stop then adds a second click listener, and clicks toggle
   # the component twice (open then close).
+  # shortcut: this guards the source string, not the browser behavior; move to
+  # a browser or jsdom test if the project gains a JS test harness.
   test "the state hook re-inits once with force" do
     dir = Path.join([:code.priv_dir(:basecoat_phoenix), "basecoat"])
     js = File.read!(Path.join(dir, "basecoat_live.js"))
