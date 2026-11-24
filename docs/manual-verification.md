@@ -416,6 +416,21 @@ client state survives:
 - A visible toast stays visible.
 - A filled OTP input keeps its digits.
 
+### Late joins
+
+The one-time runtime re-init happens on the first `BasecoatState` mount. Confirm
+the components that arrive later still initialize:
+
+- Render a select and a dropdown menu inside a nested `live_render` child whose
+  mount is slow (for example `Process.sleep(1500)` when connected). After the
+  child joins, the select trigger still has `role="combobox"`, the root still
+  has its init marker, and one click opens while the next closes.
+- Render a different component between the static and the connected render (for
+  example a different `id` in each branch) so the join patch replaces the node.
+  The new node behaves the same way.
+- Add a component with a server patch after the join, then trigger an unrelated
+  patch. The attributes above survive and clicks still toggle once.
+
 ### Nested LiveView toast
 
 Render a nested LiveView inside the parent and push a toast from it. It must
