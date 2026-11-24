@@ -905,6 +905,38 @@ Toggles `html.dark` and stores the choice in `localStorage.themeMode`. The sun s
 
 Attrs: `label` (default `"Toggle dark mode"`), `side` (top, right, bottom, left; default bottom), `class`.
 
+## Themes
+
+Built-in palettes: `default`, `clean-slate`, `modern-minimal`,
+`sunset-horizon`, `supabase`, `t3-chat`, `vercel`.
+
+```heex
+<.bc_dropdown_menu id="theme-menu">
+  <.bc_dropdown_menu_trigger id="theme-menu" variant="outline" size="sm">
+    Theme
+  </.bc_dropdown_menu_trigger>
+  <.bc_dropdown_menu_content id="theme-menu" class="w-44">
+    <.bc_dropdown_menu_group id="theme-menu-list" label="Theme">
+      <.bc_dropdown_menu_radio_item data-basecoat-skin="default">Default</.bc_dropdown_menu_radio_item>
+      <.bc_dropdown_menu_radio_item data-basecoat-skin="clean-slate">Clean Slate</.bc_dropdown_menu_radio_item>
+      <.bc_dropdown_menu_radio_item data-basecoat-skin="modern-minimal">Modern Minimal</.bc_dropdown_menu_radio_item>
+      <.bc_dropdown_menu_radio_item data-basecoat-skin="sunset-horizon">Sunset Horizon</.bc_dropdown_menu_radio_item>
+      <.bc_dropdown_menu_radio_item data-basecoat-skin="supabase">Supabase</.bc_dropdown_menu_radio_item>
+      <.bc_dropdown_menu_radio_item data-basecoat-skin="t3-chat">T3 Chat</.bc_dropdown_menu_radio_item>
+      <.bc_dropdown_menu_radio_item data-basecoat-skin="vercel">Vercel</.bc_dropdown_menu_radio_item>
+    </.bc_dropdown_menu_group>
+  </.bc_dropdown_menu_content>
+</.bc_dropdown_menu>
+```
+
+Any element with `data-basecoat-skin` switches the palette; the radio item is
+the menu-friendly choice. The choice is stored in `localStorage.themeSkin` and
+applied on the next load. `default` removes the attribute and restores the
+style pack's own tokens. Dark mode uses the palette's dark block. Fonts named
+by a palette are not bundled; load them yourself.
+
+Attrs: no component attributes beyond `data-basecoat-skin` on the item.
+
 ## Dialog
 
 ```heex

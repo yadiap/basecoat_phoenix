@@ -156,6 +156,47 @@ snippets that use them work:
 Fonts named by a theme are not bundled; load them yourself (for example
 `@font-face` rules in `app.css`).
 
+### Built-in palettes
+
+The library ships six ready-made palettes: `clean-slate`, `modern-minimal`,
+`sunset-horizon`, `supabase`, `t3-chat`, and `vercel`. They are pinned copies
+from [tweakcn](https://tweakcn.com), installed as
+`assets/vendor/basecoat/skins.css` and imported between the Basecoat CSS and
+`theme.css`.
+
+Select a palette with `data-skin` on `<html>`:
+
+```heex
+<html lang="en" data-skin="supabase">
+```
+
+`default` means no overrides: it falls back to the installed style pack's own
+tokens. To switch at runtime, add `data-basecoat-skin` to any element:
+
+```heex
+<.bc_dropdown_menu_radio_item data-basecoat-skin="vercel">Vercel</.bc_dropdown_menu_radio_item>
+<.bc_dropdown_menu_radio_item data-basecoat-skin="default">Default</.bc_dropdown_menu_radio_item>
+```
+
+A click sets or removes `data-skin`, syncs `aria-checked` on the menu items,
+and stores the choice in `localStorage.themeSkin`. The stored palette applies
+on the next load, before LiveView mounts. The same click dispatches
+`basecoat:skinchange` with `detail.skin`. Scripts can call
+`window.basecoat.skin.set("vercel")` and `window.basecoat.skin.current()`.
+
+Palettes set colors, `--radius`, and font families. Fonts are named, not
+bundled. Dark mode uses each palette's dark block. To adjust a palette, target
+its selector in `theme.css`:
+
+```css
+html[data-skin="supabase"] {
+  --primary: oklch(0.6 0.2 250);
+}
+```
+
+Re-run `mix basecoat.install` after upgrading the library to copy `skins.css`
+and add its import.
+
 ## Components
 
 51 upstream components, plus one convenience helper (`bc_spinner`, which
