@@ -113,6 +113,19 @@ defmodule BasecoatPhoenix.InstallerTest do
     assert length(String.split(css, ~s|@import "../vendor/basecoat/skins.css";|)) == 2
   end
 
+  # A hand-edited import keeps its `layer()` suffix, so the exact-line check
+  # misses it. The installer adds its own Basecoat import, and the skin import
+  # follows that, so the palette menu is not silently dead.
+  test "imports skins.css after a hand-edited Basecoat import", ctx do
+    File.write!(ctx.css_path, """
+    @import "tailwindcss" source(none);
+    @import "../vendor/basecoat/basecoat.css" layer(basecoat);
+    """)
+
+    assert {:ok, _} = install(ctx)
+    assert File.read!(ctx.css_path) =~ ~s|@import "../vendor/basecoat/skins.css";|
+  end
+
   test "never overwrites a pasted theme", ctx do
     theme_path = Path.join(Path.dirname(ctx.css_path), "theme.css")
     File.write!(theme_path, ":root { --primary: red; }\n")

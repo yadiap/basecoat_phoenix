@@ -39,4 +39,12 @@ defmodule BasecoatPhoenix.LiveJsTest do
     assert js =~ "aria-checked"
     assert js =~ "delete document.documentElement.dataset.skin"
   end
+
+  test "syncs skin state only on ARIA roles that allow it", %{js: js} do
+    assert js =~ "menuitemradio"
+    assert js =~ "aria-disabled"
+    assert js =~ "attachSkinApi"
+    assert length(String.split(js, "syncSkinItems();")) >= 4
+    assert js =~ ~s|applyStoredSkin();\n  syncSkinItems();|
+  end
 end

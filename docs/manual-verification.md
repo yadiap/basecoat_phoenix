@@ -457,3 +457,5 @@ crash.
    Basecoat tokens and no console error.
 6. Render `<html data-skin="supabase">` with storage cleared: it survives boot.
 7. Block storage for the site and switch palettes: switching works until reload.
+8. Mark a picker item `aria-disabled="true"` and click it: the palette does not
+   change.

@@ -180,8 +180,10 @@ tokens. To switch at runtime, add `data-basecoat-skin` to any element:
 
 A click sets or removes `data-skin`, syncs `aria-checked` on the menu items,
 and stores the choice in `localStorage.themeSkin`. The stored palette applies
-on the next load, before LiveView mounts. The same click dispatches
-`basecoat:skinchange` with `detail.skin`. Scripts can call
+on the next load, before LiveView mounts. A stored choice, including `default`,
+wins over a `data-skin` rendered by the server; clear `localStorage.themeSkin`
+to fall back to the markup. The same click dispatches `basecoat:skinchange`
+with `detail.skin`. Scripts can call
 `window.basecoat.skin.set("vercel")` and `window.basecoat.skin.current()`.
 
 Palettes set colors, `--radius`, and font families. Fonts are named, not

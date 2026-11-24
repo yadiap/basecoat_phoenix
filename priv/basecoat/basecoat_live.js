@@ -12,6 +12,7 @@ const PROPERTIES = ["value", "checked", "selectedIndex", "open", "hidden"];
 
 const SKIN_KEY = "themeSkin";
 const SKIN_SELECTOR = "[data-basecoat-skin]";
+const SKIN_ROLES = ["menuitemradio", "radio", "checkbox", "switch"];
 
 const storedSkin = () => {
   try {
@@ -26,6 +27,7 @@ const currentSkin = () => document.documentElement.dataset.skin || "default";
 const syncSkinItems = () => {
   const active = currentSkin();
   document.querySelectorAll(SKIN_SELECTOR).forEach((item) => {
+    if (!SKIN_ROLES.includes(item.getAttribute("role"))) return;
     const name = item.getAttribute("data-basecoat-skin") || "default";
     item.setAttribute("aria-checked", name === active ? "true" : "false");
   });
@@ -50,6 +52,10 @@ const setSkin = (name) => {
 const applyStoredSkin = () => {
   const stored = storedSkin();
   if (stored !== null) setSkin(stored);
+};
+
+const attachSkinApi = () => {
+  if (window.basecoat) window.basecoat.skin = { set: setSkin, current: currentSkin };
 };
 
 const isFormElement = (el) =>
@@ -216,8 +222,7 @@ const syncRuntime = () => {
   // setTimeout, not requestAnimationFrame: rAF is paused in a hidden tab.
   setTimeout(() => {
     window.basecoat?.initAll?.({ force: true });
-    syncSkinItems();
-    if (window.basecoat) window.basecoat.skin = { set: setSkin, current: currentSkin };
+    attachSkinApi();
   }, 0);
 };
 
@@ -227,6 +232,7 @@ export const BasecoatState = {
     syncOverlays(this.el, this._baseline, this._baseline, new Map(), this._baseline);
     bindBackdrop(this.el);
     syncRuntime();
+    syncSkinItems();
   },
 
   beforeUpdate(toEl) {
@@ -274,6 +280,7 @@ export const BasecoatState = {
 
     if (window.basecoat?.refresh) window.basecoat.refresh(this.el);
 
+    syncSkinItems();
     this._baseline = this._server;
   },
 
@@ -392,7 +399,10 @@ const handleClick = (event) => {
   if (theme) return window.basecoat?.theme?.toggle?.();
 
   const skin = event.target.closest?.(SKIN_SELECTOR);
-  if (skin) return setSkin(skin.getAttribute("data-basecoat-skin"));
+  if (skin) {
+    if (skin.getAttribute("aria-disabled") === "true") return;
+    return setSkin(skin.getAttribute("data-basecoat-skin"));
+  }
 };
 
 const handleCustomEvent = (event) => {
@@ -427,6 +437,8 @@ export const BasecoatHooks = { BasecoatState, BasecoatChart };
 
 if (typeof document !== "undefined") {
   applyStoredSkin();
+  syncSkinItems();
+  attachSkinApi();
   document.addEventListener("click", handleClick);
 
   for (const type of [

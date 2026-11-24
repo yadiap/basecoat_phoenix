@@ -106,4 +106,25 @@ defmodule BasecoatPhoenix.AssetsTest do
       assert css =~ token
     end
   end
+
+  # The light selector (0,1,1) outranks Basecoat's .dark (0,1,0), so a token
+  # missing from a palette's dark block would silently keep its light value.
+  test "every palette defines the same tokens in its dark block" do
+    dir = Path.join([:code.priv_dir(:basecoat_phoenix), "basecoat"])
+    css = File.read!(Path.join(dir, "skins.css"))
+
+    for skin <- @skins do
+      assert tokens(css, ~s|html[data-skin="#{skin}"]|) ==
+               tokens(css, ~s|html[data-skin="#{skin}"].dark|)
+    end
+  end
+
+  defp tokens(css, selector) do
+    [_, body] = Regex.run(~r/#{Regex.escape(selector)}\s*\{([^}]*)\}/, css)
+
+    ~r/--([a-z0-9-]+):/
+    |> Regex.scan(body, capture: :all_but_first)
+    |> List.flatten()
+    |> Enum.sort()
+  end
 end
