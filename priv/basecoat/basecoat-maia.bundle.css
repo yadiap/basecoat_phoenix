@@ -1,4 +1,4 @@
-/* Basecoat v1.2.1, maia, single-file source. Import after tailwindcss. */
+/* Basecoat v1.3.0, maia, single-file source. Import after tailwindcss. */
 @custom-variant dark (&:is(html.dark *));
 
 :root {
@@ -213,7 +213,7 @@
   }
 
   .alert > :is(h2, h3, h4, h5, h6, strong, [data-title], section) :where(a[href]:not(.btn)) {
-    @apply underline decoration-dotted decoration-current/50 underline-offset-3 hover:text-foreground hover:decoration-current focus-visible:decoration-current;
+    @apply underline underline-offset-3 hover:text-foreground;
   }
 
   .alert > section {
@@ -1921,21 +1921,18 @@
       @apply absolute block z-[60] w-fit max-w-xs origin-(--transform-origin) scale-95 truncate invisible opacity-0 transition-all pointer-events-none content-[attr(data-tooltip)];
     }
 
-    &:hover:before {
+    &:hover:before,
+    &:focus-visible:before {
       @apply visible opacity-100 scale-100;
-    }
-
-    &:focus-visible:not(:hover):before {
-      @apply hidden;
     }
 
     &:not([data-side]),
     &[data-side='top'] {
-      @apply before:bottom-full before:mb-1.5 before:translate-y-2 hover:before:translate-y-0;
+      @apply before:bottom-full before:mb-1.5 before:translate-y-2 hover:before:translate-y-0 focus-visible:before:translate-y-0;
     }
 
     &[data-side='bottom'] {
-      @apply before:top-full before:mt-1.5 before:-translate-y-2 hover:before:translate-y-0;
+      @apply before:top-full before:mt-1.5 before:-translate-y-2 hover:before:translate-y-0 focus-visible:before:translate-y-0;
     }
 
     &:not([data-side]),
@@ -1954,15 +1951,15 @@
     }
 
     &[data-side='left'] {
-      @apply before:right-full before:mr-1.5 before:translate-x-2 hover:before:translate-x-0;
+      @apply before:right-full before:mr-1.5 before:translate-x-2 hover:before:translate-x-0 focus-visible:before:translate-x-0;
     }
 
     &[data-side='right'] {
-      @apply before:left-full before:ml-1.5 before:-translate-x-2 hover:before:translate-x-0;
+      @apply before:left-full before:ml-1.5 before:-translate-x-2 hover:before:translate-x-0 focus-visible:before:translate-x-0;
     }
 
     &[data-side='inline-start'] {
-      @apply before:right-full before:mr-1.5 before:translate-x-2 hover:before:translate-x-0;
+      @apply before:right-full before:mr-1.5 before:translate-x-2 hover:before:translate-x-0 focus-visible:before:translate-x-0;
     }
 
     &[data-side='inline-start']:dir(rtl) {
@@ -1970,7 +1967,7 @@
     }
 
     &[data-side='inline-end'] {
-      @apply before:left-full before:ml-1.5 before:-translate-x-2 hover:before:translate-x-0;
+      @apply before:left-full before:ml-1.5 before:-translate-x-2 hover:before:translate-x-0 focus-visible:before:translate-x-0;
     }
 
     &[data-side='inline-end']:dir(rtl) {
@@ -2838,7 +2835,7 @@
 
   /* Badge */
   .badge {
-    @apply h-5 gap-1 rounded-4xl border border-transparent px-2 py-0.5 text-xs font-medium transition-all [&>svg]:size-3!;
+    @apply h-5 gap-1 rounded-4xl border border-transparent px-2 py-0.5 text-xs font-medium transition-all has-[[data-icon='inline-start']]:ps-1.5 has-[[data-icon='inline-end']]:pe-1.5 [&>svg]:size-3!;
   }
 
   .badge:not([data-variant]),
@@ -3057,7 +3054,7 @@
 
   .select:not(select) [role='option'].active,
   .select:not(select) [role='option']:focus-visible {
-    @apply bg-muted text-foreground [&_svg]:text-foreground;
+    @apply bg-accent text-accent-foreground [&_svg]:text-accent-foreground;
   }
 
   .select:not(select) [role='group'] {
@@ -3219,7 +3216,7 @@
   }
 
   .dropdown-menu :is([role='menuitem'], [role='menuitemcheckbox'], [role='menuitemradio']).active {
-    @apply bg-muted text-foreground;
+    @apply bg-accent text-accent-foreground;
   }
 
   .dropdown-menu [data-variant='destructive'] {

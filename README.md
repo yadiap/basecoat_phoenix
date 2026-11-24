@@ -3,7 +3,7 @@
 [Basecoat](https://basecoatui.com) components for Phoenix LiveView, as `bc_*`
 function components with upstream markup, ARIA, and `data-*` attributes intact.
 
-Basecoat 1.2.1 is vendored under `priv/basecoat/`. Installation needs no npm and
+Basecoat 1.3.0 is vendored under `priv/basecoat/`. Installation needs no npm and
 no network.
 
 Source: <https://github.com/yadiap/basecoat_phoenix>. Not published on Hex.
@@ -25,7 +25,7 @@ Add the dependency to `mix.exs`:
 defp deps do
   [
     # ...
-    {:basecoat_phoenix, git: "https://github.com/yadiap/basecoat_phoenix.git", tag: "v0.5.0"}
+    {:basecoat_phoenix, git: "https://github.com/yadiap/basecoat_phoenix.git", tag: "v0.6.0"}
   ]
 end
 ```

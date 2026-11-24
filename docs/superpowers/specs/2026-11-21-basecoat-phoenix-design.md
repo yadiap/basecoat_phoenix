@@ -388,7 +388,7 @@ Steps:
 - Custom events `basecoat:open-dialog`, `basecoat:close-dialog`, `basecoat:open-drawer`, `basecoat:close-drawer`, `basecoat:toast` for `Phoenix.LiveView.JS.dispatch/2`.
 - Relay `change` from `.select` / `.combobox` roots to their hidden input so LiveView form handling sees the value. The relay fires only when the event target is the component root, never the hidden input, so it cannot loop. It is distinct from `window.basecoat.refresh`, which never emits `change`.
 - Installer CSS surgery lives in pure functions (`BasecoatPhoenix.Installer.CSS`), not regexes: `remove_plugin_block/2` scans brace depth and matches the full quoted plugin name, and `insert_after/3` inserts one line after the first line that starts with a given prefix. Both are unit-tested without touching the filesystem.
-- On `phx:page-loading-stop`, call `window.basecoat.initAll()` (idempotent).
+- Basecoat initializes on `DOMContentLoaded` and its `MutationObserver` handles nodes added later. The hook never re-inits on `phx:page-loading-stop`: LiveView's join patch drops the init marker attributes Basecoat added, so a second `initAll()` would add a second click listener to the nodes that survived the patch, and every click would toggle the component twice. Instead the first `BasecoatState.mounted()` calls `window.basecoat.initAll({ force: true })` once, which destroys the stale listeners and restores the runtime attributes (`role="combobox"`, `tabindex="-1"`, init markers).
 - All handlers guard on `window.basecoat` being present.
 
 ### LiveView behavior

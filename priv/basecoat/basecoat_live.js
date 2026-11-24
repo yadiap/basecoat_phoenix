@@ -158,11 +158,26 @@ const bindBackdrop = (root) => {
   }
 };
 
+// LiveView's join patch drops the attributes Basecoat adds at init (role,
+// tabindex, init markers) because the server never rendered them. Re-init once
+// after mount so the runtime restores them. Never re-init on
+// phx:page-loading-stop: a second init adds a second click listener, and a
+// click then toggles the component twice. The forced re-init destroys the old
+// listeners first.
+let runtimeSynced = false;
+
+const syncRuntime = () => {
+  if (runtimeSynced) return;
+  runtimeSynced = true;
+  requestAnimationFrame(() => window.basecoat?.initAll?.({ force: true }));
+};
+
 export const BasecoatState = {
   mounted() {
     this._baseline = disambiguate(snapshot(this.el));
     syncOverlays(this.el, this._baseline, this._baseline, new Map(), this._baseline);
     bindBackdrop(this.el);
+    syncRuntime();
   },
 
   beforeUpdate(toEl) {
@@ -373,5 +388,4 @@ if (typeof document !== "undefined") {
 
   document.addEventListener("change", handleChange);
   window.addEventListener("phx:basecoat_toast", (event) => toast(event.detail));
-  window.addEventListener("phx:page-loading-stop", () => window.basecoat?.initAll?.());
 }

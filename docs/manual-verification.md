@@ -54,6 +54,12 @@ installer already wires `priv/basecoat/basecoat_live.js` through
   open and the selection is preserved.
 - With dynamic server options, update the options assign; the refreshed listbox
   shows the new options.
+- With the list open, type a letter; the highlight jumps to the first option
+  that starts with it, and typing more letters narrows the match. Repeating one
+  letter cycles through the options that start with it.
+- The open trigger has `role="combobox"` and `aria-activedescendant` pointing at
+  the highlighted option's id, even when the markup gives options no ids.
+- The highlighted option uses the accent color, not the muted color.
 
 ## Button group
 
@@ -323,6 +329,11 @@ installer already wires `priv/basecoat/basecoat_live.js` through
 - Checkbox and radio items show their indicator when checked and toggle.
 - A disabled item is skipped by keyboard navigation.
 - Shortcuts render right-aligned as `<kbd>`.
+- Opening moves focus to the menu; Tab from an open menu closes it and returns
+  focus to the trigger.
+- Typing a letter highlights the first matching item, and
+  `aria-activedescendant` on the menu names the highlighted item.
+- The highlighted item uses the accent color, not the muted color.
 
 ## Command
 
@@ -338,7 +349,7 @@ installer already wires `priv/basecoat/basecoat_live.js` through
 - Clicking toggles `html.dark` and persists the choice in `localStorage.themeMode`.
 - The sun icon shows in dark mode, the moon in light mode.
 - A theme change survives LiveView patches.
-- The tooltip renders below the button.
+- The tooltip renders below the button on hover and on keyboard focus.
 
 ## Alert Dialog
 

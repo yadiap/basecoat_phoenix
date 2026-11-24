@@ -55,8 +55,19 @@ for the primary style.
 ```heex
 <.bc_badge>New</.bc_badge>
 <.bc_badge variant="secondary">Draft</.bc_badge>
-<.bc_badge variant="outline">v1.2.1</.bc_badge>
+<.bc_badge variant="outline">v1.3.0</.bc_badge>
 <.bc_badge variant="destructive">Failed</.bc_badge>
+```
+
+Put `data-icon="inline-start"` or `data-icon="inline-end"` on an inline icon;
+Basecoat tightens the matching side padding so the icon sits flush with the
+edge:
+
+```heex
+<.bc_badge>
+  <svg data-icon="inline-start" class="lucide lucide-check" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
+  Verified
+</.bc_badge>
 ```
 
 ## Kbd

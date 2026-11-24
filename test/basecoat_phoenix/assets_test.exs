@@ -2,23 +2,23 @@ defmodule BasecoatPhoenix.AssetsTest do
   use ExUnit.Case, async: true
 
   @hashes %{
-    "all.min.js" => "6dd11f6ea6f2e6321c2ead587bebfeec985ef48a8f108e21722e65be0c94fe73",
+    "all.min.js" => "41f572dede3365378781fae9f0d1218f2ae2783f1a5496ace26bb67fda2e6b6b",
     "basecoat-luma.bundle.css" =>
-      "d80a645d5b0b106bfd866c82e780aa749d2c57ff30dabf92fa74ef2e6f55fba5",
+      "ab1de0317df65cc619e4210cc90a3c1b4e6d116b1be6c6522b4dff13c45193c3",
     "basecoat-lyra.bundle.css" =>
-      "4a0fbd15fd67cb714c041b21325aef45ceae7de743a133566afc57bfdb9416fe",
+      "a284b003d543ce0b59c3415c87f1181e2ff7a7976c70b6f4537e15202f5c34bc",
     "basecoat-maia.bundle.css" =>
-      "aca88c9cce78f87591acc5ecb97b8029a5e286808c78ba4a5db1428bfc6505c1",
+      "dc4e701d03e9d60963255b0dfdc5ee86192613ed26317a6096db890bbd238e18",
     "basecoat-mira.bundle.css" =>
-      "8417b612dba5dde923754719d6e2d8fc5a16c3e688443f2c87ae0f71aaa24e7f",
+      "4c479549e5e8cf7585973937c9530cf40ba5c4f03d5cffd81ee00ee5a9320129",
     "basecoat-nova.bundle.css" =>
-      "1d504788b864cffa88b25e257c052b09d0a92f697b978491716a6e96f38e5789",
+      "97af5d3b44fc4bf5c42c0bf7d2a129b0d93e60dfe5d4fb042698075915c9682f",
     "basecoat-rhea.bundle.css" =>
-      "a24302291fe3d83433b8b6dbddfb426810121d7d81f53e50d7d5f62f76c1692b",
+      "fc14205c20f060aa7736271010ff1012f7aea2ce93d5278ae59e7c60b5fce3c2",
     "basecoat-sera.bundle.css" =>
-      "817abad93b33782d976c54a5223a6b980cb87b9129597e05fb7a7c476e23b214",
+      "cf796e7ff1e9106565ac9b7a8297db353363bceba59437bc1a5b63355f0c6f50",
     "basecoat-vega.bundle.css" =>
-      "c3ebec72289acda7c3ea1ecad39c203b387b332e964b7ae15c9e5814219ff751",
+      "2d03cf002af5a9e191613a76bb871f5b35c87a45f878203bd8cdf114c500b031",
     "chart.min.js" => "4e82a2bc45d8ae9f5fc74341d38e71b6bfd4d691075f0cd08fd8ed6b01feff5c",
     "chart.umd.min.js" => "87364cc2b2a76a6684929e7d6b80b18a897794db38400caff1fcf1791c6925d2",
     "LICENSE" => "160a6cea26ff1931297957499ab739e94c4bc79ecea18b490c9f533fa76ace78",
@@ -36,8 +36,43 @@ defmodule BasecoatPhoenix.AssetsTest do
     end
   end
 
-  test "version file is 1.2.1" do
+  test "version file is 1.3.0" do
     dir = Path.join([:code.priv_dir(:basecoat_phoenix), "basecoat"])
-    assert File.read!(Path.join(dir, "VERSION")) |> String.trim() == "1.2.1"
+    assert File.read!(Path.join(dir, "VERSION")) |> String.trim() == "1.3.0"
+  end
+
+  # 1.3.0 moved the badge icon padding, tooltip focus, and active-item colors
+  # into every style pack. A partial copy would leave some packs behind.
+  test "every style bundle carries the 1.3.0 rules" do
+    dir = Path.join([:code.priv_dir(:basecoat_phoenix), "basecoat"])
+
+    for style <- ~w(luma lyra maia mira nova rhea sera vega) do
+      css = File.read!(Path.join(dir, "basecoat-#{style}.bundle.css"))
+
+      # Sera draws badges as borderless uppercase labels with no padding, so it
+      # has no icon padding to adjust.
+      if style != "sera" do
+        assert css =~ "has-[[data-icon='inline-start']]:ps-1.5",
+               "#{style}: badge icon padding missing"
+      end
+
+      assert css =~ "&:focus-visible:before",
+             "#{style}: tooltip keyboard focus missing"
+
+      assert css =~
+               ".select:not(select) [role='option'].active,\n  .select:not(select) [role='option']:focus-visible {\n    @apply bg-accent",
+             "#{style}: select active option still uses the muted color"
+    end
+  end
+
+  # LiveView's join patch drops Basecoat's init markers. A plain initAll on
+  # phx:page-loading-stop then adds a second click listener, and clicks toggle
+  # the component twice (open then close).
+  test "the state hook re-inits once with force" do
+    dir = Path.join([:code.priv_dir(:basecoat_phoenix), "basecoat"])
+    js = File.read!(Path.join(dir, "basecoat_live.js"))
+
+    assert js =~ "initAll?.({ force: true })"
+    refute js =~ ~s("phx:page-loading-stop")
   end
 end
