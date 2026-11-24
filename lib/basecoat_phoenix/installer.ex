@@ -95,6 +95,7 @@ defmodule BasecoatPhoenix.Installer do
     js_dir = Path.dirname(js_path)
 
     basecoat_css = relative(Path.join(vendor, "basecoat.css"), css_dir)
+    skins_css = relative(Path.join(vendor, "skins.css"), css_dir)
     basecoat_js = relative(Path.join(vendor, "basecoat.js"), js_dir)
     live_js = relative(Path.join(vendor, "basecoat_live.js"), js_dir)
 
@@ -102,6 +103,7 @@ defmodule BasecoatPhoenix.Installer do
       css
       |> CSS.insert_after(@tailwind_import, ~s(@import "#{basecoat_css}";))
       |> CSS.insert_after(~s(@import "#{basecoat_css}";), @theme_import)
+      |> CSS.insert_after(~s(@import "#{basecoat_css}";), ~s(@import "#{skins_css}";))
       |> append_once(~s(@source "#{source_path}";))
       |> maybe_typeset(opts, vendor, css_dir, basecoat_css)
 
@@ -135,6 +137,7 @@ defmodule BasecoatPhoenix.Installer do
 
     [
       {Path.join(priv, "basecoat-#{style}.bundle.css"), Path.join(vendor, "basecoat.css")},
+      {Path.join(priv, "skins.css"), Path.join(vendor, "skins.css")},
       {Path.join(priv, "all.min.js"), Path.join(vendor, "basecoat.js")},
       {Path.join(priv, "basecoat_live.js"), Path.join(vendor, "basecoat_live.js")}
     ] ++

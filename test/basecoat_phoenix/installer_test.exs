@@ -78,6 +78,7 @@ defmodule BasecoatPhoenix.InstallerTest do
     assert File.exists?(Path.join(vendor, "basecoat.css"))
     assert File.exists?(Path.join(vendor, "basecoat.js"))
     assert File.exists?(Path.join(vendor, "basecoat_live.js"))
+    assert File.exists?(Path.join(vendor, "skins.css"))
 
     css = File.read!(ctx.css_path)
 
@@ -99,9 +100,17 @@ defmodule BasecoatPhoenix.InstallerTest do
     css = File.read!(ctx.css_path)
 
     assert css =~
-             ~s|@import "../vendor/basecoat/basecoat.css";\n@import "./theme.css";|
+             ~s|@import "../vendor/basecoat/basecoat.css";\n@import "../vendor/basecoat/skins.css";\n@import "./theme.css";|
 
     assert File.read!(theme_path) =~ "--color-destructive-foreground"
+  end
+
+  test "imports skins.css once", ctx do
+    assert {:ok, _} = install(ctx)
+    assert {:ok, _} = install(ctx)
+
+    css = File.read!(ctx.css_path)
+    assert length(String.split(css, ~s|@import "../vendor/basecoat/skins.css";|)) == 2
   end
 
   test "never overwrites a pasted theme", ctx do
