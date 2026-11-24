@@ -39,7 +39,7 @@ defmodule BasecoatPhoenix.Components.DataDisplayFixture do
       <.bc_code_block_header>
         <.bc_code_block_title>Terminal</.bc_code_block_title>
         <.bc_code_block_actions>
-          <.bc_code_block_copy>Copy</.bc_code_block_copy>
+          <.bc_code_block_copy class="ms-auto">Copy</.bc_code_block_copy>
         </.bc_code_block_actions>
       </.bc_code_block_header>
       <pre class="scrollbar" tabindex="0" aria-label="Terminal output" data-line-numbers><code>npm run build</code></pre>
@@ -129,6 +129,7 @@ defmodule BasecoatPhoenix.Components.DataDisplayTest do
     assert text(one(root, "header > span")) == "Terminal"
 
     button = one(root, "header > div > button.btn")
+    assert attr(button, "class") == "btn ms-auto"
     assert attr(button, "data-variant") == "ghost"
     assert attr(button, "data-size") == "xs"
     assert attr(button, "data-copy")

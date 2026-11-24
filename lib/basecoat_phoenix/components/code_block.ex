@@ -47,12 +47,20 @@ defmodule BasecoatPhoenix.Components.CodeBlock do
     """
   end
 
+  attr(:class, :string, default: nil)
   attr(:rest, :global)
   slot(:inner_block, required: true)
 
   def bc_code_block_copy(assigns) do
     ~H"""
-    <button type="button" class="btn" data-variant="ghost" data-size="xs" data-copy {@rest}>
+    <button
+      type="button"
+      class={classes(["btn", @class])}
+      data-variant="ghost"
+      data-size="xs"
+      data-copy
+      {@rest}
+    >
       {render_slot(@inner_block)}
     </button>
     """
