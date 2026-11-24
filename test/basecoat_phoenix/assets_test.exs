@@ -83,4 +83,27 @@ defmodule BasecoatPhoenix.AssetsTest do
     assert js =~ "initAll?.({ force: true })"
     refute js =~ ~s("phx:page-loading-stop")
   end
+
+  @skins ~w(clean-slate modern-minimal sunset-horizon supabase t3-chat vercel)
+
+  test "skins.css ships every palette in light and dark" do
+    dir = Path.join([:code.priv_dir(:basecoat_phoenix), "basecoat"])
+    css = File.read!(Path.join(dir, "skins.css"))
+
+    for skin <- @skins do
+      assert css =~ ~s|html[data-skin="#{skin}"] {|
+      assert css =~ ~s|html[data-skin="#{skin}"].dark {|
+    end
+
+    refute css =~ ~s|html[data-skin="default"]|
+
+    for token <- ~w(--background --foreground --card --card-foreground --popover
+                   --popover-foreground --primary --primary-foreground --secondary
+                   --secondary-foreground --muted --muted-foreground --accent
+                   --accent-foreground --destructive --border --input --ring
+                   --chart-1 --chart-5 --sidebar --sidebar-ring --radius
+                   --font-sans --font-mono) do
+      assert css =~ token
+    end
+  end
 end

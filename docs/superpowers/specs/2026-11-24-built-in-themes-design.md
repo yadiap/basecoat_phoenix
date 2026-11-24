@@ -43,9 +43,9 @@ persistence.
 - One block per palette: `html[data-skin="clean-slate"]` and
   `html[data-skin="clean-slate"].dark`, and the same for the other five.
 - Each block sets the Basecoat tokens: background, foreground, card, popover,
-  primary, secondary, muted, accent, destructive (+ foreground), border,
-  input, ring, chart 1–5, sidebar colors, plus `--radius`, `--font-sans`,
-  `--font-mono`, `--font-serif`.
+  primary, secondary, muted, accent, destructive, border, input, ring,
+  chart 1–5, sidebar colors, plus `--radius`, `--font-sans`, `--font-mono`.
+  Tokens Basecoat does not map (serif, shadows, tracking) are skipped.
 - Values are pinned from the tweakcn registry on 2026-11-24 and committed.
   No runtime fetch.
 - No block for `default`.

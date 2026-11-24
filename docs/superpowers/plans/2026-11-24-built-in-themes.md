@@ -59,9 +59,9 @@ test "skins.css ships every palette in light and dark" do
   for token <- ~w(--background --foreground --card --card-foreground --popover
                  --popover-foreground --primary --primary-foreground --secondary
                  --secondary-foreground --muted --muted-foreground --accent
-                 --accent-foreground --destructive --destructive-foreground
-                 --border --input --ring --chart-1 --chart-5 --sidebar
-                 --sidebar-ring --radius --font-sans --font-mono --font-serif) do
+                 --accent-foreground --destructive --border --input --ring
+                 --chart-1 --chart-5 --sidebar --sidebar-ring --radius
+                 --font-sans --font-mono) do
     assert css =~ token
   end
 end
@@ -83,12 +83,12 @@ skins = ["clean-slate", "modern-minimal", "sunset-horizon", "supabase", "t3-chat
 
 colors = """background foreground card card-foreground popover popover-foreground
 primary primary-foreground secondary secondary-foreground muted muted-foreground
-accent accent-foreground destructive destructive-foreground border input ring
+accent accent-foreground destructive border input ring
 chart-1 chart-2 chart-3 chart-4 chart-5 sidebar sidebar-foreground
 sidebar-primary sidebar-primary-foreground sidebar-accent
 sidebar-accent-foreground sidebar-border sidebar-ring""".split()
 
-extras = ["radius", "font-sans", "font-mono", "font-serif"]
+extras = ["radius", "font-sans", "font-mono"]
 
 lines = [
     "/* Basecoat built-in palettes.",
