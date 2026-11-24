@@ -28,4 +28,15 @@ defmodule BasecoatPhoenix.LiveJsTest do
     refute js =~ "childSignature"
     refute js =~ "data-basecoat-state"
   end
+
+  test "switches and persists skins", %{js: js} do
+    assert js =~ "data-basecoat-skin"
+    assert js =~ ~s|localStorage.getItem(SKIN_KEY)|
+    assert js =~ ~s|localStorage.setItem(SKIN_KEY|
+    assert js =~ ~s|const SKIN_KEY = "themeSkin"|
+    assert js =~ "basecoat:skinchange"
+    assert js =~ "window.basecoat.skin"
+    assert js =~ "aria-checked"
+    assert js =~ "delete document.documentElement.dataset.skin"
+  end
 end

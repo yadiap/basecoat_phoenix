@@ -10,6 +10,48 @@ const OVERLAY_SELECTOR = DIALOG_SELECTORS.map((s) => `dialog${s}`).join(",");
 const BASE_COAT_OWNED_BACKDROP = [".drawer", ".sheet"];
 const PROPERTIES = ["value", "checked", "selectedIndex", "open", "hidden"];
 
+const SKIN_KEY = "themeSkin";
+const SKIN_SELECTOR = "[data-basecoat-skin]";
+
+const storedSkin = () => {
+  try {
+    return localStorage.getItem(SKIN_KEY);
+  } catch {
+    return null;
+  }
+};
+
+const currentSkin = () => document.documentElement.dataset.skin || "default";
+
+const syncSkinItems = () => {
+  const active = currentSkin();
+  document.querySelectorAll(SKIN_SELECTOR).forEach((item) => {
+    const name = item.getAttribute("data-basecoat-skin") || "default";
+    item.setAttribute("aria-checked", name === active ? "true" : "false");
+  });
+};
+
+const setSkin = (name) => {
+  const skin = !name || name === "default" ? null : name;
+
+  if (skin) document.documentElement.dataset.skin = skin;
+  else delete document.documentElement.dataset.skin;
+
+  try {
+    localStorage.setItem(SKIN_KEY, skin || "default");
+  } catch {}
+
+  syncSkinItems();
+  document.dispatchEvent(
+    new CustomEvent("basecoat:skinchange", { detail: { skin: skin || "default" } }),
+  );
+};
+
+const applyStoredSkin = () => {
+  const stored = storedSkin();
+  if (stored !== null) setSkin(stored);
+};
+
 const isFormElement = (el) =>
   el instanceof HTMLInputElement ||
   el instanceof HTMLTextAreaElement ||
@@ -172,7 +214,11 @@ const syncRuntime = () => {
   // Deferred so every hook's baseline snapshot lacks the runtime attributes.
   // Keep this after the snapshot or updated() treats them as server changes.
   // setTimeout, not requestAnimationFrame: rAF is paused in a hidden tab.
-  setTimeout(() => window.basecoat?.initAll?.({ force: true }), 0);
+  setTimeout(() => {
+    window.basecoat?.initAll?.({ force: true });
+    syncSkinItems();
+    if (window.basecoat) window.basecoat.skin = { set: setSkin, current: currentSkin };
+  }, 0);
 };
 
 export const BasecoatState = {
@@ -344,6 +390,9 @@ const handleClick = (event) => {
 
   const theme = event.target.closest?.("[data-basecoat-theme-toggle]");
   if (theme) return window.basecoat?.theme?.toggle?.();
+
+  const skin = event.target.closest?.(SKIN_SELECTOR);
+  if (skin) return setSkin(skin.getAttribute("data-basecoat-skin"));
 };
 
 const handleCustomEvent = (event) => {
@@ -377,6 +426,7 @@ const handleChange = (event) => {
 export const BasecoatHooks = { BasecoatState, BasecoatChart };
 
 if (typeof document !== "undefined") {
+  applyStoredSkin();
   document.addEventListener("click", handleClick);
 
   for (const type of [

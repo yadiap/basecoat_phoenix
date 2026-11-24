@@ -447,3 +447,13 @@ applied.
 Submit an empty or malformed JSON value for a `multiple` select or combobox.
 `BasecoatPhoenix.Forms.decode_multi/1` returns `[]` and the LiveView does not
 crash.
+### Built-in palettes
+
+1. Click a palette in the theme menu: colors, radius, and font change at once.
+2. Reload: the same palette is still applied.
+3. Click Default: `data-skin` disappears and Basecoat tokens return.
+4. Toggle dark mode with a palette active: the palette's dark block applies.
+5. Set `data-skin="nope"` in DevTools and reload: the page renders with
+   Basecoat tokens and no console error.
+6. Render `<html data-skin="supabase">` with storage cleared: it survives boot.
+7. Block storage for the site and switch palettes: switching works until reload.
