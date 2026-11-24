@@ -329,8 +329,8 @@ installer already wires `priv/basecoat/basecoat_live.js` through
 - Checkbox and radio items show their indicator when checked and toggle.
 - A disabled item is skipped by keyboard navigation.
 - Shortcuts render right-aligned as `<kbd>`.
-- Opening moves focus to the menu; Tab from an open menu closes it and returns
-  focus to the trigger.
+- Opening moves focus to the menu; Tab from an open menu closes it and moves
+  focus to the next control in the tab order.
 - Typing a letter highlights the first matching item, and
   `aria-activedescendant` on the menu names the highlighted item.
 - The highlighted item uses the accent color, not the muted color.

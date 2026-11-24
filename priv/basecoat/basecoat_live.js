@@ -169,7 +169,10 @@ let runtimeSynced = false;
 const syncRuntime = () => {
   if (runtimeSynced) return;
   runtimeSynced = true;
-  requestAnimationFrame(() => window.basecoat?.initAll?.({ force: true }));
+  // Deferred so every hook's baseline snapshot lacks the runtime attributes.
+  // Keep this after the snapshot or updated() treats them as server changes.
+  // setTimeout, not requestAnimationFrame: rAF is paused in a hidden tab.
+  setTimeout(() => window.basecoat?.initAll?.({ force: true }), 0);
 };
 
 export const BasecoatState = {
